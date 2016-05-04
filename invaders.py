@@ -44,6 +44,34 @@ class Game(sge.dsp.Game):
         # rather than having to unpause first.
         self.event_close()
 
+class Invader(sge.dsp.Object):
+
+    def __init__(self):
+        super(Invader, self).__init__(sge.game.width/2., sge.game.height/2.-80,
+                                      sprite=sge.gfx.Sprite(name='invader'))
+
+    def event_step(self, time_passed, delta_mult):
+        self.xvelocity = random.random() * 4 * random.choice((-1, 1))
+        self.yvelocity = random.random() * 4 * random.choice((-1, 1))
+        #Bouncing off the edges:
+        if self.bbox_left < 0:
+            self.bbox_left = 0
+            self.xvelocity = abs(self.xvelocity)
+        elif self.bbox_right > sge.game.current_room.width:
+            self.bbox_right = sge.game.current_room.width
+            self.xvelocity = -abs(self.xvelocity)
+        if self.bbox_top < 0:
+            self.bbox_top = 0
+            self.yvelocity = abs(self.yvelocity)
+
+    def event_collision(self, other, xdirection, ydirection):
+        if isinstance(other, Wall):
+            self.yvelocity = max(-abs(self.yvelocity)-BULLET_ACCELERATION, -10)
+            self.xvelocity = random.choice([-1, 1]) * random.random()
+        elif isinstance(other, Bullet):
+            self.destroy()
+
+
 
 class Player(sge.dsp.Object):
 
@@ -101,7 +129,7 @@ class Bullet(sge.dsp.Object):
 
     def event_collision(self, other, xdirection, ydirection):
         if isinstance(other, Wall):
-            self.yvelocity = -abs(self.yvelocity) - BULLET_ACCELERATION
+            self.yvelocity = max(-abs(self.yvelocity)-BULLET_ACCELERATION, -10)
             self.xvelocity = random.choice([-1, 1]) * random.random()
 
 
@@ -122,10 +150,11 @@ layers = [sge.gfx.BackgroundLayer(paddle_sprite, sge.game.width / 2, 0, -10000,
 background = sge.gfx.Background([], sge.gfx.Color("black"))
 
 # Create objects
+invaders = [Invader() for _ in xrange(5)]
 player = Player()
 wall = Wall()
 bullet = Bullet()
-objects = [player, wall, bullet]
+objects = invaders + [player, wall, bullet]
 
 # Create rooms
 sge.game.start_room = sge.dsp.Room(objects, background=background)
