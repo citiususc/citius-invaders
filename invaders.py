@@ -7,13 +7,13 @@ Created on Tue May  3 18:34:45 2016
 """
 
 import random
-
 import sge
 
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
 BULLET_START_SPEED = 2
 BULLET_ACCELERATION = 0.5
+CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 
 class Game(sge.dsp.Game):
 
@@ -27,6 +27,27 @@ class Game(sge.dsp.Game):
             self.event_close()
         elif key in ('p', 'enter'):
             self.pause()
+        #Invaders size scaling
+        elif key in ('up', 'down'):
+            if key == 'down':
+                invaders[2].image_xscale -= 1.0
+                invaders[2].image_yscale -= 1.0
+            elif key == 'up':
+                invaders[2].image_xscale += 1.0
+                invaders[2].image_yscale += 1.0
+            invaders[2].bbox_width = (invaders[2].sprite.width *
+                                                      invaders[2].image_xscale)
+            invaders[2].bbox_height = (invaders[2].sprite.height *
+                                                      invaders[2].image_yscale)
+        #Invaders color changing
+        elif key == 'd':
+            v = invaders[2].image_blend.red
+            if v > 10:
+                invaders[2].image_blend = sge.gfx.Color([v-10, v-10, v-10])
+        elif key == 'l':
+            v = invaders[2].image_blend.red
+            if v < 245:
+                invaders[2].image_blend = sge.gfx.Color([v+10, v+10, v+10])
 
     def event_close(self):
         self.end()
@@ -48,7 +69,8 @@ class Invader(sge.dsp.Object):
 
     def __init__(self):
         super(Invader, self).__init__(sge.game.width/2., sge.game.height/2.-80,
-                                      sprite=sge.gfx.Sprite(name='invader'))
+                                      sprite=sge.gfx.Sprite(name='invader'),
+                                      image_blend=sge.gfx.Color('white'))
 
     def event_step(self, time_passed, delta_mult):
         self.xvelocity = random.random() * 4 * random.choice((-1, 1))
@@ -70,8 +92,6 @@ class Invader(sge.dsp.Object):
             self.xvelocity = random.choice([-1, 1]) * random.random()
         elif isinstance(other, Bullet):
             self.destroy()
-
-
 
 class Player(sge.dsp.Object):
 
@@ -101,7 +121,7 @@ class Wall(sge.dsp.Object):
     def __init__(self):
         wall_sprite = sge.gfx.Sprite(width=1024, height=8)
         wall_sprite.draw_rectangle(0, 0, wall_sprite.width, wall_sprite.height,
-                                   fill=sge.gfx.Color("#EF7D10"))
+                                   fill=CITIUS_COLOR)
         super(Wall, self).__init__(0, sge.game.height - 80,
                                    sprite=wall_sprite)
 
@@ -142,7 +162,7 @@ ball_sprite = sge.gfx.Sprite(width=8, height=8, origin_x=4, origin_y=4)
 paddle_sprite.draw_rectangle(0, 0, paddle_sprite.width, paddle_sprite.height,
                              fill=sge.gfx.Color("white"))
 ball_sprite.draw_rectangle(0, 0, ball_sprite.width, ball_sprite.height,
-                           fill=sge.gfx.Color("#EF7D10"))
+                           fill=CITIUS_COLOR)
 
 # Load backgrounds
 layers = [sge.gfx.BackgroundLayer(paddle_sprite, sge.game.width / 2, 0, -10000,
