@@ -20,7 +20,7 @@ Created on Tue May  3 14:01:45 2016
 # along with this software. If not, see
 # <http://creativecommons.org/publicdomain/zero/1.0/>.
 
-import random
+import random, os
 
 import sge
 
