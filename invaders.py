@@ -148,10 +148,6 @@ class PlayerBullet(sge.dsp.Object):
         if self.bbox_bottom < 0:
             self.destroy()
 
-    def event_collision(self, other, xdirection, ydirection):
-        if isinstance(other, Invader):
-            self.destroy()
-
 class Bullet(sge.dsp.Object):
 
     def __init__(self):
