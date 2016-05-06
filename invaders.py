@@ -3,7 +3,7 @@
 """
 Created on Tue May  3 18:34:45 2016
 
-@author: T. Teijeiro
+@author: P. Rodriguez-Mier and T. Teijeiro
 """
 
 import random
@@ -110,8 +110,12 @@ class Player(sge.dsp.Object):
         # Movement
         key_motion = (sge.keyboard.get_pressed(self.rkey) -
                       sge.keyboard.get_pressed(self.lkey))
-
         self.xvelocity = key_motion * PLAYER_SPEED
+        #"Animate" the sprite according to the moving direction
+        if key_motion > 0 and self.image_xscale < 0:
+            self.image_xscale = 1
+        elif key_motion < 0 and self.image_xscale > 0:
+            self.image_xscale = -1
 
         # Keep the paddle inside the window
         if self.bbox_left < 0:
@@ -131,15 +135,21 @@ class Wall(sge.dsp.Object):
 class PlayerBullet(sge.dsp.Object):
 
     def __init__(self, player):
-        super(PlayerBullet, self).__init__(player.x+15, player.y-15, sprite=ball_sprite)
+        #The bullet appears out of the hands of nao
+        x = (player.x if player.image_xscale == -1
+                                             else player.x + player.bbox_width)
+        super(PlayerBullet, self).__init__(x, player.y, sprite=ball_sprite)
 
     def event_create(self):
         self.yvelocity = -BULLET_START_SPEED
 
     def event_step(self, time_passed, delta_mult):
-        if self.bbox_top < 0:
+        if self.bbox_bottom < 0:
             self.destroy()
 
+    def event_collision(self, other, xdirection, ydirection):
+        if isinstance(other, Invader):
+            self.destroy()
 
 class Bullet(sge.dsp.Object):
 
