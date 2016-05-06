@@ -11,7 +11,7 @@ import sge
 
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
-BULLET_START_SPEED = 2
+BULLET_START_SPEED = 10
 BULLET_ACCELERATION = 0.5
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 
@@ -48,6 +48,8 @@ class Game(sge.dsp.Game):
             v = invaders[2].image_blend.red
             if v < 245:
                 invaders[2].image_blend = sge.gfx.Color([v+10, v+10, v+10])
+        elif key == 'space':
+            sge.game.current_room.add(PlayerBullet(player))
 
     def event_close(self):
         self.end()
@@ -90,7 +92,7 @@ class Invader(sge.dsp.Object):
         if isinstance(other, Wall):
             self.yvelocity = max(-abs(self.yvelocity)-BULLET_ACCELERATION, -10)
             self.xvelocity = random.choice([-1, 1]) * random.random()
-        elif isinstance(other, Bullet):
+        elif isinstance(other, PlayerBullet):
             self.destroy()
 
 class Player(sge.dsp.Object):
@@ -98,6 +100,7 @@ class Player(sge.dsp.Object):
     def __init__(self):
         self.lkey = "left"
         self.rkey = "right"
+
         x = sge.game.width / 2.
         y = sge.game.height - PLAYER_YOFFSET
         super(Player, self).__init__(x, y, sprite=sge.gfx.Sprite(name='nao'),
@@ -124,6 +127,19 @@ class Wall(sge.dsp.Object):
                                    fill=CITIUS_COLOR)
         super(Wall, self).__init__(0, sge.game.height - 80,
                                    sprite=wall_sprite)
+
+class PlayerBullet(sge.dsp.Object):
+
+    def __init__(self, player):
+        super(PlayerBullet, self).__init__(player.x+15, player.y-15, sprite=ball_sprite)
+
+    def event_create(self):
+        self.yvelocity = -BULLET_START_SPEED
+
+    def event_step(self, time_passed, delta_mult):
+        if self.bbox_top < 0:
+            self.destroy()
+
 
 class Bullet(sge.dsp.Object):
 
@@ -173,8 +189,8 @@ background = sge.gfx.Background([], sge.gfx.Color("black"))
 invaders = [Invader() for _ in xrange(5)]
 player = Player()
 wall = Wall()
-bullet = Bullet()
-objects = invaders + [player, wall, bullet]
+#bullet = Bullet()
+objects = invaders + [player, wall]
 
 # Create rooms
 sge.game.start_room = sge.dsp.Room(objects, background=background)
