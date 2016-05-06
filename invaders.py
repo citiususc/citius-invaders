@@ -94,6 +94,7 @@ class Invader(sge.dsp.Object):
             self.xvelocity = random.choice([-1, 1]) * random.random()
         elif isinstance(other, PlayerBullet):
             self.destroy()
+            other.destroy()
 
 class Player(sge.dsp.Object):
 
@@ -169,6 +170,12 @@ class Bullet(sge.dsp.Object):
             self.xvelocity = random.choice([-1, 1]) * random.random()
 
 
+class GameRoom(sge.dsp.Room):
+    def event_step(self, time_passed, delta_mult):
+        pass
+
+
+
 # Create Game object
 Game(width=1024, height=768, fps=120, window_text="CITIUS-invaders")
 
@@ -193,7 +200,7 @@ wall = Wall()
 objects = invaders + [player, wall]
 
 # Create rooms
-sge.game.start_room = sge.dsp.Room(objects, background=background)
+sge.game.start_room = GameRoom(objects, background=background)
 
 sge.game.mouse.visible = False
 
