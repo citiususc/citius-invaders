@@ -48,8 +48,6 @@ class Game(sge.dsp.Game):
             v = invaders[2].image_blend.red
             if v < 245:
                 invaders[2].image_blend = sge.gfx.Color([v+10, v+10, v+10])
-        elif key == 'space':
-            sge.game.current_room.add(PlayerBullet(player))
 
     def event_close(self):
         self.end()
@@ -123,6 +121,11 @@ class Player(sge.dsp.Object):
             self.bbox_left = 0
         elif self.bbox_right > sge.game.current_room.width:
             self.bbox_right = sge.game.current_room.width
+
+    def event_key_press(self, key, char):
+        #Shooting
+        if key == 'space':
+            sge.game.current_room.add(PlayerBullet(self))
 
 class Wall(sge.dsp.Object):
 
