@@ -11,7 +11,7 @@ import sge
 
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
-BULLET_START_SPEED = 10
+BULLET_START_SPEED = 5
 BULLET_ACCELERATION = 0.5
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 
@@ -65,17 +65,45 @@ class Game(sge.dsp.Game):
         # rather than having to unpause first.
         self.event_close()
 
-class Invader(sge.dsp.Object):
 
-    def __init__(self):
-        super(Invader, self).__init__(sge.game.width/2., sge.game.height/2.-80,
+class Invader(sge.dsp.Object):
+    attr_generators = {
+        'scale': lambda: random.lognormvariate(0.5, 0),
+        'alpha': lambda: random.randint(100, 255),
+        'shoot_speed': lambda: random.lognormvariate(0.5, 0),
+        'xvelocity': lambda: random.lognormvariate(0.1, 0),
+        'yvelocity': lambda: random.lognormvariate(0.1, 0),
+        'x_prob_change_dir': lambda: random.uniform(0.001, 0.1),
+        'y_prob_change_dir': lambda: random.uniform(0.001, 0.01),
+        'projectile_size': lambda: random.lognormvariate(0.5, 0)
+    }
+
+    def __init__(self, **kwargs):
+        # Generate random values and update with the ones provided in kwargs
+        self.attributes = {k: self.attr_generators.get(k)() for k in self.attr_generators.keys()}
+        self.attributes.update(kwargs)
+
+        super(Invader, self).__init__(sge.game.width / 2., sge.game.height / 2. - 80,
                                       sprite=sge.gfx.Sprite(name='invader'),
                                       image_blend=sge.gfx.Color('white'))
 
+        self.xvelocity = self.attributes.get('xvelocity')
+        self.yvelocity = self.attributes.get('yvelocity')
+        blend = self.attributes.get('alpha')
+        scale = self.attributes.get('scale')
+        self.image_blend = sge.gfx.Color([blend, blend, blend])
+        self.image_xscale = scale
+        self.image_yscale = scale
+
     def event_step(self, time_passed, delta_mult):
-        self.xvelocity = random.random() * 4 * random.choice((-1, 1))
-        self.yvelocity = random.random() * 4 * random.choice((-1, 1))
-        #Bouncing off the edges:
+
+        # Change directions
+        if random.random() <= self.attributes.get('x_prob_change_dir'):
+            self.xvelocity = -self.xvelocity
+        if random.random() <= self.attributes.get('y_prob_change_dir'):
+            self.yvelocity = -self.yvelocity
+
+        # Bouncing off the edges:
         if self.bbox_left < 0:
             self.bbox_left = 0
             self.xvelocity = abs(self.xvelocity)
@@ -136,6 +164,7 @@ class Wall(sge.dsp.Object):
         super(Wall, self).__init__(0, sge.game.height - 80,
                                    sprite=wall_sprite)
 
+
 class PlayerBullet(sge.dsp.Object):
 
     def __init__(self, player):
@@ -151,8 +180,13 @@ class PlayerBullet(sge.dsp.Object):
         if self.bbox_bottom < 0:
             self.destroy()
 
-class Bullet(sge.dsp.Object):
+    def event_collision(self, other, xdirection, ydirection):
+        if isinstance(other, Invader):
+            self.destroy()
+            other.destroy()
 
+
+class Bullet(sge.dsp.Object):
     def __init__(self):
         x = sge.game.width / 2
         y = sge.game.height / 2
@@ -182,7 +216,6 @@ class Bullet(sge.dsp.Object):
 class GameRoom(sge.dsp.Room):
     def event_step(self, time_passed, delta_mult):
         pass
-
 
 
 # Create Game object
