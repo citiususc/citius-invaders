@@ -8,13 +8,21 @@ Created on Sat May  7 11:50:42 2016
 
 import sge
 import random
+import objects
 
 #Resolution constants
 RESX = 1024
 RESY = 768
-
+#Objects position
+PLAYER_YOFFSET = 50
+PLAYER_SPEED = 4
+BULLET_START_SPEED = 20
+WALL_YOFFSET = 80
+WALL_HEIGHT = 8
 #Number of frames between generations
 GENERATION_TIME = 360
+#Citius color
+CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 
 class InvadersGame(sge.dsp.Game):
     """
@@ -75,3 +83,7 @@ class InvadersGame(sge.dsp.Game):
         # This allows the player to still exit while the game is paused,
         # rather than having to unpause first.
         self.event_close()
+
+class GameRoom(sge.dsp.Room):
+    def event_step(self, time_passed, delta_mult):
+        pass
