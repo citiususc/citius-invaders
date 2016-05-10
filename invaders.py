@@ -70,18 +70,17 @@ class Invader(sge.dsp.Object):
     attr_generators = {
         'scale': lambda: random.lognormvariate(0.5, 0),
         'alpha': lambda: random.randint(100, 255),
-        'shoot_speed': lambda: random.lognormvariate(0.5, 0),
-        'xvelocity': lambda: random.lognormvariate(0.1, 0),
-        'yvelocity': lambda: random.lognormvariate(0.1, 0),
-        'x_prob_change_dir': lambda: random.uniform(0.001, 0.1),
-        'y_prob_change_dir': lambda: random.uniform(0.001, 0.01),
-        'projectile_size': lambda: random.lognormvariate(0.5, 0)
+        'xvelocity': lambda: random.lognormvariate(0.01, 0),
+        'yvelocity': lambda: random.lognormvariate(0.01, 0),
+        'x_prob_change_dir': lambda: random.uniform(0.001, 0.01),
+        'y_prob_change_dir': lambda: random.uniform(0.001, 0.01)
     }
 
     def __init__(self, **kwargs):
         # Generate random values and update with the ones provided in kwargs
         self.attributes = {k: self.attr_generators.get(k)() for k in self.attr_generators.keys()}
         self.attributes.update(kwargs)
+        print self.attributes
 
         super(Invader, self).__init__(sge.game.width / 2., sge.game.height / 2. - 80,
                                       sprite=sge.gfx.Sprite(name='invader'),
