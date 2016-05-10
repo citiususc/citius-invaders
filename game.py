@@ -53,7 +53,8 @@ class InvadersGame(sge.dsp.Game):
             self.gensprite.draw_clear()
             for i1, i2 in pairs:
                 self.gensprite.draw_line(i1.x, i1.y, i2.x, i2.y,
-                                         i1.image_blend, thickness=1, anti_alias=True)
+                                         i1.image_blend, thickness=1,
+                                         anti_alias=True)
             self.pause(sprite=self.gensprite)
             self.alarms['generation'] = GENERATION_TIME
 
