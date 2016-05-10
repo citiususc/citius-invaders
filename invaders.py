@@ -182,6 +182,7 @@ class GameRoom(sge.dsp.Room):
 
 # Create Game object
 Game(width=1024, height=768, fps=120, window_text="CITIUS-invaders")
+#game.InvadersGame()
 
 # Load sprites
 paddle_sprite = sge.gfx.Sprite(width=8, height=48, origin_x=4, origin_y=24)

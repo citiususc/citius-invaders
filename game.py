@@ -28,7 +28,6 @@ class InvadersGame(sge.dsp.Game):
                                            window_text="CITIUS-invaders")
         self.gensprite = sge.gfx.Sprite(width=RESX, height=RESY, origin_x=0,
                                         origin_y=0)
-        self.gensprite.draw_text(sge.gfx.Font("Droid Sans Mono", size=48), 'hi', 0, 0)
         self.alarms['generation'] = GENERATION_TIME
 
     def event_key_press(self, key, char):
@@ -44,7 +43,8 @@ class InvadersGame(sge.dsp.Game):
 
     def event_alarm(self, alarm_id):
         if alarm_id == 'generation':
-            lst = self.invaders[:]
+            lst = [o for o in self.current_room.objects
+                                                  if o.image_blend is not None]
             pairs = []
             while len(lst) > 1:
                 i1 = lst.pop(random.randrange(0, len(lst)))
@@ -52,9 +52,11 @@ class InvadersGame(sge.dsp.Game):
                 pairs.append((i1, i2))
             self.gensprite.draw_clear()
             for i1, i2 in pairs:
-                self.gensprite.draw_line(i1.x, i1.y, i2.x, i2.y,
-                                         i1.image_blend, thickness=1,
-                                         anti_alias=True)
+                self.gensprite.draw_line(i1.x+i1.bbox_width/2,
+                                         i1.y+i1.bbox_height/2,
+                                         i2.x+i2.bbox_width/2,
+                                         i2.y+i2.bbox_height/2,
+                                         i1.image_blend, thickness=2)
             self.pause(sprite=self.gensprite)
             self.alarms['generation'] = GENERATION_TIME
 
