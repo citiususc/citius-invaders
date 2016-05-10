@@ -44,8 +44,10 @@ class Invader(sge.dsp.Object):
         self.image_blend = sge.gfx.Color([blend, blend, blend])
         self.image_xscale = scale
         self.image_yscale = scale
+        self.steps = 0
 
     def event_step(self, time_passed, delta_mult):
+        self.steps += 1
         # Change directions
         if random.random() <= self.attributes.get('x_prob_change_dir'):
             self.xvelocity = -self.xvelocity
@@ -65,6 +67,11 @@ class Invader(sge.dsp.Object):
         if self.bbox_bottom > game.RESY-(game.WALL_YOFFSET+game.WALL_HEIGHT):
             self.bbox_bottom = game.RESY-(game.WALL_YOFFSET+game.WALL_HEIGHT)
             self.yvelocity = -abs(self.yvelocity)
+
+    def compare_fitness(self, other):
+        if not isinstance(other, Invader):
+            raise ValueError('Incomparable types')
+        return self.steps.__cmp__(other.steps)
 
 
 class Player(sge.dsp.Object):
