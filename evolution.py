@@ -25,4 +25,4 @@ def mating_pool(population, num_of_children=10):
                 break
 
     random.shuffle(pool)
-    return pool
+    return [(pool[i], pool[i+1]) for i in xrange(0, len(pool), 2)]
