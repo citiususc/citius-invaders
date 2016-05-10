@@ -124,7 +124,6 @@ class Player(sge.dsp.Object):
     def __init__(self):
         self.lkey = "left"
         self.rkey = "right"
-
         x = sge.game.width / 2.
         y = sge.game.height - PLAYER_YOFFSET
         super(Player, self).__init__(x, y, sprite=sge.gfx.Sprite(name='nao'),
@@ -159,7 +158,7 @@ class Wall(sge.dsp.Object):
         wall_sprite.draw_rectangle(0, 0, wall_sprite.width, wall_sprite.height,
                                    fill=CITIUS_COLOR)
         super(Wall, self).__init__(0, sge.game.height - 80,
-                                   sprite=wall_sprite, checks_collisions=False)
+                                   sprite=wall_sprite, tangible=False)
 
 
 class PlayerBullet(sge.dsp.Object):
