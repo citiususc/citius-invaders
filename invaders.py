@@ -68,10 +68,10 @@ class Game(sge.dsp.Game):
 
 class Invader(sge.dsp.Object):
     attr_generators = {
-        'scale': lambda: random.lognormvariate(0.5, 0),
+        'scale': lambda: random.lognormvariate(0.5, 0.3),
         'alpha': lambda: random.randint(100, 255),
-        'xvelocity': lambda: random.lognormvariate(0.01, 0),
-        'yvelocity': lambda: random.lognormvariate(0.01, 0),
+        'xvelocity': lambda: random.lognormvariate(0.1, 0.4),
+        'yvelocity': lambda: random.lognormvariate(0.1, 0.4),
         'x_prob_change_dir': lambda: random.uniform(0.001, 0.01),
         'y_prob_change_dir': lambda: random.uniform(0.001, 0.01)
     }
@@ -90,12 +90,13 @@ class Invader(sge.dsp.Object):
         self.yvelocity = self.attributes.get('yvelocity')
         blend = self.attributes.get('alpha')
         scale = self.attributes.get('scale')
+        self.bbox_width = (self.sprite.width * scale)
+        self.bbox_height = (self.sprite.height * scale)
         self.image_blend = sge.gfx.Color([blend, blend, blend])
         self.image_xscale = scale
         self.image_yscale = scale
 
     def event_step(self, time_passed, delta_mult):
-
         # Change directions
         if random.random() <= self.attributes.get('x_prob_change_dir'):
             self.xvelocity = -self.xvelocity
@@ -114,12 +115,14 @@ class Invader(sge.dsp.Object):
             self.yvelocity = abs(self.yvelocity)
 
     def event_collision(self, other, xdirection, ydirection):
-        if isinstance(other, Wall):
-            self.yvelocity = max(-abs(self.yvelocity)-BULLET_ACCELERATION, -10)
-            self.xvelocity = random.choice([-1, 1]) * random.random()
-        elif isinstance(other, PlayerBullet):
+
+        if isinstance(other, PlayerBullet):
             self.destroy()
             other.destroy()
+        elif isinstance(other, Wall):
+            self.yvelocity = -self.yvelocity #max(-abs(self.yvelocity)-BULLET_ACCELERATION, -10)
+            #self.xvelocity = random.choice([-1, 1]) * random.random()
+
 
 class Player(sge.dsp.Object):
 
@@ -218,7 +221,7 @@ class GameRoom(sge.dsp.Room):
 
 
 # Create Game object
-Game(width=1024, height=768, fps=120, window_text="CITIUS-invaders")
+Game(width=1024, height=768, fps=60, window_text="CITIUS-invaders")
 
 # Load sprites
 paddle_sprite = sge.gfx.Sprite(width=8, height=48, origin_x=4, origin_y=24)
@@ -234,7 +237,7 @@ layers = [sge.gfx.BackgroundLayer(paddle_sprite, sge.game.width / 2, 0, -10000,
 background = sge.gfx.Background([], sge.gfx.Color("black"))
 
 # Create objects
-invaders = [Invader() for _ in xrange(5)]
+invaders = [Invader() for _ in xrange(10)]
 player = Player()
 wall = Wall()
 #bullet = Bullet()
