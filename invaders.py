@@ -68,7 +68,7 @@ class Game(sge.dsp.Game):
 
 class Invader(sge.dsp.Object):
     attr_generators = {
-        'scale': lambda: random.lognormvariate(0.5, 0.3),
+        'scale': lambda: random.lognormvariate(0.5, 0.3)+1,
         'alpha': lambda: random.randint(100, 255),
         'xvelocity': lambda: random.lognormvariate(0.1, 0.4),
         'yvelocity': lambda: random.lognormvariate(0.1, 0.4),
