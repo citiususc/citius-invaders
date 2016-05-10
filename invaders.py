@@ -8,12 +8,15 @@ Created on Tue May  3 18:34:45 2016
 
 import random
 import sge
+import game
 
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
 BULLET_START_SPEED = 15
 BULLET_ACCELERATION = 0.5
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
+WALL_YOFFSET = 80
+WALL_HEIGHT = 8
 
 class Game(sge.dsp.Game):
 
@@ -114,8 +117,8 @@ class Invader(sge.dsp.Object):
         if self.bbox_top < 0:
             self.bbox_top = 0
             self.yvelocity = abs(self.yvelocity)
-        if self.bbox_bottom > wall.bbox_top:
-            self.bbox_bottom = wall.bbox_top
+        if self.bbox_bottom > game.RESY-(WALL_YOFFSET+WALL_HEIGHT):
+            self.bbox_bottom = game.RESY-(WALL_YOFFSET+WALL_HEIGHT)
             self.yvelocity = -abs(self.yvelocity)
 
 
@@ -151,15 +154,6 @@ class Player(sge.dsp.Object):
         if key == 'space':
             sge.game.current_room.add(PlayerBullet(self))
 
-class Wall(sge.dsp.Object):
-
-    def __init__(self):
-        wall_sprite = sge.gfx.Sprite(width=1024, height=8)
-        wall_sprite.draw_rectangle(0, 0, wall_sprite.width, wall_sprite.height,
-                                   fill=CITIUS_COLOR)
-        super(Wall, self).__init__(0, sge.game.height - 80,
-                                   sprite=wall_sprite, tangible=False)
-
 
 class PlayerBullet(sge.dsp.Object):
 
@@ -181,34 +175,6 @@ class PlayerBullet(sge.dsp.Object):
             self.destroy()
             other.destroy()
 
-
-class Bullet(sge.dsp.Object):
-    def __init__(self):
-        x = sge.game.width / 2
-        y = sge.game.height / 2
-        super(Bullet, self).__init__(x, y, sprite=ball_sprite)
-
-    def event_create(self):
-        self.yvelocity = BULLET_START_SPEED
-
-    def event_step(self, time_passed, delta_mult):
-        # Bouncing off of the edges
-        if self.bbox_left < 0:
-            self.bbox_left = 0
-            self.xvelocity = abs(self.xvelocity)
-        elif self.bbox_right > sge.game.current_room.width:
-            self.bbox_right = sge.game.current_room.width
-            self.xvelocity = -abs(self.xvelocity)
-        if self.bbox_top < 0:
-            self.bbox_top = 0
-            self.yvelocity = abs(self.yvelocity)
-
-    def event_collision(self, other, xdirection, ydirection):
-        if isinstance(other, Wall):
-            self.yvelocity = max(-abs(self.yvelocity)-BULLET_ACCELERATION, -10)
-            self.xvelocity = random.choice([-1, 1]) * random.random()
-
-
 class GameRoom(sge.dsp.Room):
     def event_step(self, time_passed, delta_mult):
         pass
@@ -224,18 +190,17 @@ paddle_sprite.draw_rectangle(0, 0, paddle_sprite.width, paddle_sprite.height,
                              fill=sge.gfx.Color("white"))
 ball_sprite.draw_rectangle(0, 0, ball_sprite.width, ball_sprite.height,
                            fill=CITIUS_COLOR)
-
 # Load backgrounds
-layers = [sge.gfx.BackgroundLayer(paddle_sprite, sge.game.width / 2, 0, -10000,
-                                  repeat_up=True, repeat_down=True)]
-background = sge.gfx.Background([], sge.gfx.Color("black"))
+wall_sprite = sge.gfx.Sprite(width=game.RESX, height=8)
+wall_sprite.draw_rectangle(0, 0, wall_sprite.width, wall_sprite.height,
+                           fill=CITIUS_COLOR)
+layers = [sge.gfx.BackgroundLayer(wall_sprite, 0, game.RESY-WALL_YOFFSET)]
+background = sge.gfx.Background(layers, sge.gfx.Color("black"))
 
 # Create objects
 invaders = [Invader() for _ in xrange(30)]
 player = Player()
-wall = Wall()
-#bullet = Bullet()
-objects = invaders + [player, wall]
+objects = invaders + [player]
 
 # Create rooms
 sge.game.start_room = GameRoom(objects, background=background)
