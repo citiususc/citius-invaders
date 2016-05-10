@@ -7,17 +7,22 @@ Created on Tue May  3 18:34:45 2016
 """
 
 import random
-import invaders
+import objects
 
-class Evolution:
-    def __init__(self, population, prob_crossover=0.8, prob_mutation=0.1):
-        self.population = population
-        self.prob_crossover = prob_crossover
-        self.prob_mutation = prob_mutation
+def mating_pool(population, num_of_children=10):
+    pool = []
+    # Sort the population
+    sorted_population = sorted(population, objects.Invader.compare_fitness)
+    # Get the maximum fitness
+    max_fitness = sorted_population[-1].steps
+    while len(pool) < num_of_children*2:
+        # Generate a random uniform number between [0, max_fitness]
+        r = random.uniform(0, max_fitness)
+        # Select the one according to the accumulative probability
+        for i in population:
+            if i.steps >= r:
+                pool.append(i)
+                break
 
-    @classmethod
-    def random(cls, size=30):
-        pass
-
-    def mutate(self, individual):
-        pass
+    random.shuffle(pool)
+    return pool
