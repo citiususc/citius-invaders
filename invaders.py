@@ -11,7 +11,7 @@ import sge
 
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
-BULLET_START_SPEED = 15
+BULLET_START_SPEED = 20
 BULLET_ACCELERATION = 0.5
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 
@@ -70,10 +70,10 @@ class Invader(sge.dsp.Object):
     attr_generators = {
         'scale': lambda: random.lognormvariate(0.5, 0.3)+1,
         'alpha': lambda: random.randint(100, 255),
-        'xvelocity': lambda: random.lognormvariate(0.1, 0.4),
-        'yvelocity': lambda: random.lognormvariate(0.1, 0.4),
-        'x_prob_change_dir': lambda: random.uniform(0.001, 0.01),
-        'y_prob_change_dir': lambda: random.uniform(0.001, 0.01)
+        'xvelocity': lambda: random.lognormvariate(0.0, 0.5)/2,
+        'yvelocity': lambda: random.lognormvariate(0.0, 0.5)/2,
+        'x_prob_change_dir': lambda: random.uniform(0.0, 0.05),
+        'y_prob_change_dir': lambda: random.uniform(0.0, 0.05)
     }
 
     def __init__(self, **kwargs):
@@ -220,7 +220,7 @@ Game(width=1024, height=768, fps=120, window_text="CITIUS-invaders")
 
 # Load sprites
 paddle_sprite = sge.gfx.Sprite(width=8, height=48, origin_x=4, origin_y=24)
-ball_sprite = sge.gfx.Sprite(width=5, height=25, origin_x=4, origin_y=4)
+ball_sprite = sge.gfx.Sprite(width=3, height=40, origin_x=4, origin_y=4)
 paddle_sprite.draw_rectangle(0, 0, paddle_sprite.width, paddle_sprite.height,
                              fill=sge.gfx.Color("white"))
 ball_sprite.draw_rectangle(0, 0, ball_sprite.width, ball_sprite.height,
