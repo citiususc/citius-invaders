@@ -69,8 +69,9 @@ if __name__ == '__main__':
     # Load backgrounds
     wall_sprite = sge.gfx.Sprite(width=game.RESX, height=8)
     wall_sprite.draw_rectangle(0, 0, wall_sprite.width, wall_sprite.height,
-                               fill=CITIUS_COLOR)
-    layers = [sge.gfx.BackgroundLayer(wall_sprite, 0, game.RESY-WALL_YOFFSET)]
+                               fill=game.CITIUS_COLOR)
+    layers = [sge.gfx.BackgroundLayer(wall_sprite, 0,
+                                      game.RESY-game.WALL_YOFFSET)]
     background = sge.gfx.Background(layers, sge.gfx.Color("black"))
 
     # Create objects
@@ -79,7 +80,7 @@ if __name__ == '__main__':
     obj = invaders + [player]
 
     # Create rooms
-    sge.game.start_room = GameRoom(obj, background=background)
+    sge.game.start_room = game.GameRoom(obj, background=background)
 
     sge.game.mouse.visible = False
     sge.game.start()

@@ -60,11 +60,17 @@ class InvadersGame(sge.dsp.Game):
                 pairs.append((i1, i2))
             self.gensprite.draw_clear()
             for i1, i2 in pairs:
+                self.gensprite.draw_circle(i1.x+i1.bbox_width/2,
+                                           i1.y+i1.bbox_height/2,
+                                           i1.bbox_width, outline=CITIUS_COLOR)
+                self.gensprite.draw_circle(i2.x+i2.bbox_width/2,
+                                           i2.y+i2.bbox_height/2,
+                                           i2.bbox_width, outline=CITIUS_COLOR)
                 self.gensprite.draw_line(i1.x+i1.bbox_width/2,
                                          i1.y+i1.bbox_height/2,
                                          i2.x+i2.bbox_width/2,
                                          i2.y+i2.bbox_height/2,
-                                         i1.image_blend, thickness=2)
+                                         CITIUS_COLOR, thickness=2)
             self.pause(sprite=self.gensprite)
             self.alarms['generation'] = GENERATION_TIME
 
