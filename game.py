@@ -7,6 +7,14 @@ Created on Sat May  7 11:50:42 2016
 """
 
 import sge
+import random
+
+#Resolution constants
+RESX = 1024
+RESY = 768
+
+#Number of frames between generations
+GENERATION_TIME = 360
 
 class InvadersGame(sge.dsp.Game):
     """
@@ -16,8 +24,12 @@ class InvadersGame(sge.dsp.Game):
 
     def __init__(self):
         """Initializes a new InvadersGame, with all parameters properly set"""
-        super(InvadersGame, self).__init__(width=1024, height=768, fps=120,
-                                                 window_text="CITIUS-invaders")
+        super(InvadersGame, self).__init__(width=RESX, height=RESY, fps=120,
+                                           window_text="CITIUS-invaders")
+        self.gensprite = sge.gfx.Sprite(width=RESX, height=RESY, origin_x=0,
+                                        origin_y=0)
+        self.gensprite.draw_text(sge.gfx.Font("Droid Sans Mono", size=48), 'hi', 0, 0)
+        self.alarms['generation'] = GENERATION_TIME
 
     def event_key_press(self, key, char):
         global game_in_progress
@@ -29,31 +41,21 @@ class InvadersGame(sge.dsp.Game):
             self.event_close()
         elif key in ('p', 'enter'):
             self.pause()
-            self.alarms['generation'] = 360
-        #Invaders size scaling
-        elif key in ('up', 'down'):
-            if key == 'down':
-                invaders[2].image_xscale -= 1.0
-                invaders[2].image_yscale -= 1.0
-            elif key == 'up':
-                invaders[2].image_xscale += 1.0
-                invaders[2].image_yscale += 1.0
-            invaders[2].bbox_width = (invaders[2].sprite.width *
-                                                      invaders[2].image_xscale)
-            invaders[2].bbox_height = (invaders[2].sprite.height *
-                                                      invaders[2].image_yscale)
-        #Invaders color changing
-        elif key == 'd':
-            v = invaders[2].image_blend.red
-            if v > 10:
-                invaders[2].image_blend = sge.gfx.Color([v-10, v-10, v-10])
-        elif key == 'l':
-            v = invaders[2].image_blend.red
-            if v < 245:
-                invaders[2].image_blend = sge.gfx.Color([v+10, v+10, v+10])
 
     def event_alarm(self, alarm_id):
-        print alarm_id, self.alarms
+        if alarm_id == 'generation':
+            lst = self.invaders[:]
+            pairs = []
+            while len(lst) > 1:
+                i1 = lst.pop(random.randrange(0, len(lst)))
+                i2 = lst.pop(random.randrange(0, len(lst)))
+                pairs.append((i1, i2))
+            self.gensprite.draw_clear()
+            for i1, i2 in pairs:
+                self.gensprite.draw_line(i1.x, i1.y, i2.x, i2.y,
+                                         i1.image_blend, thickness=1, anti_alias=True)
+            self.pause(sprite=self.gensprite)
+            self.alarms['generation'] = GENERATION_TIME
 
     def event_close(self):
         self.end()
