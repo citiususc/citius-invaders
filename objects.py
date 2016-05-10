@@ -68,7 +68,7 @@ class Invader(sge.dsp.Object):
             self.bbox_bottom = game.RESY-(game.WALL_YOFFSET+game.WALL_HEIGHT)
             self.yvelocity = -abs(self.yvelocity)
 
-    def __cmp__(self, other):
+    def compare_fitness(self, other):
         if not isinstance(other, Invader):
             raise ValueError('Incomparable types')
         return self.steps.__cmp__(other.steps)
