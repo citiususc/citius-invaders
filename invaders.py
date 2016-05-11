@@ -75,7 +75,7 @@ if __name__ == '__main__':
     background = sge.gfx.Background(layers, sge.gfx.Color("black"))
 
     # Create objects
-    invaders = [objects.Invader() for _ in xrange(30)]
+    invaders = [objects.Invader() for _ in xrange(2)]
     player = objects.Player()
     obj = invaders + [player]
 

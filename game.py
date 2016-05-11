@@ -37,6 +37,7 @@ class InvadersGame(sge.dsp.Game):
         self.gensprite = sge.gfx.Sprite(width=RESX, height=RESY, origin_x=0,
                                         origin_y=0)
         self.alarms['generation'] = GENERATION_TIME
+        self.pairs = None
 
     def event_key_press(self, key, char):
         global game_in_progress
@@ -52,38 +53,50 @@ class InvadersGame(sge.dsp.Game):
     def event_alarm(self, alarm_id):
         if alarm_id == 'generation':
             lst = [o for o in self.current_room.objects
-                                                  if o.image_blend is not None]
+                                             if isinstance(o, objects.Invader)]
             pairs = []
             while len(lst) > 1:
                 i1 = lst.pop(random.randrange(0, len(lst)))
                 i2 = lst.pop(random.randrange(0, len(lst)))
                 pairs.append((i1, i2))
-            self.gensprite.draw_clear()
-            for i1, i2 in pairs:
-                self.gensprite.draw_circle(i1.x+i1.bbox_width/2,
-                                           i1.y+i1.bbox_height/2,
-                                           i1.bbox_width, outline=CITIUS_COLOR)
-                self.gensprite.draw_circle(i2.x+i2.bbox_width/2,
-                                           i2.y+i2.bbox_height/2,
-                                           i2.bbox_width, outline=CITIUS_COLOR)
-                self.gensprite.draw_line(i1.x+i1.bbox_width/2,
-                                         i1.y+i1.bbox_height/2,
-                                         i2.x+i2.bbox_width/2,
-                                         i2.y+i2.bbox_height/2,
-                                         CITIUS_COLOR, thickness=2)
+            self.pairs = pairs
             self.pause(sprite=self.gensprite)
             self.alarms['generation'] = GENERATION_TIME
 
     def event_close(self):
         self.end()
 
-    def event_paused_key_press(self, key, char):
-        if key == 'escape':
-            # This allows the player to still exit while the game is
-            # paused, rather than having to unpause first.
-            self.event_close()
+    def event_paused_step(self, time_passed, delta_mult):
+        if self.pairs:
+            #Draw the next cross operation
+            i1, i2 = self.pairs.pop()
+            self.gensprite.draw_clear()
+            self.gensprite.draw_circle(i1.x+i1.bbox_width/2,
+                                       i1.y+i1.bbox_height/2,
+                                       i1.bbox_width, outline=CITIUS_COLOR)
+            self.gensprite.draw_circle(i2.x+i2.bbox_width/2,
+                                       i2.y+i2.bbox_height/2,
+                                       i2.bbox_width, outline=CITIUS_COLOR)
+            self.gensprite.draw_line(i1.x+i1.bbox_width/2,
+                                     i1.y+i1.bbox_height/2,
+                                     i2.x+i2.bbox_width/2,
+                                     i2.y+i2.bbox_height/2,
+                                     CITIUS_COLOR, thickness=2)
+            #And add the new individual
+            desc = objects.Invader()
+            desc.x, desc.y = (i1.x + i2.x)/2., (i1.y+i2.y)/2.
+            self.current_room.add(desc)
         else:
             self.unpause()
+
+    def event_paused_key_press(self, key, char):
+        if not self.pairs:
+            if key == 'escape':
+                # This allows the player to still exit while the game is
+                # paused, rather than having to unpause first.
+                self.event_close()
+            else:
+                self.unpause()
 
     def event_paused_close(self):
         # This allows the player to still exit while the game is paused,
