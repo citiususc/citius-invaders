@@ -19,7 +19,7 @@ class Invader(sge.dsp.Object):
         'scale': {
             'min': 1,
             'max': 5,
-            'gen': lambda: random.lognormvariate(0.5, 0.3)+1
+            'gen': lambda: random.gammavariate(2, 0.8)+1
         },
 
         'alpha': {
@@ -31,13 +31,13 @@ class Invader(sge.dsp.Object):
         'xvelocity': {
             'min': 0.01,
             'max': 5,
-            'gen': lambda: random.lognormvariate(0.0, 0.5)/2
+            'gen': lambda: random.gammavariate(2, 0.4)
         },
 
         'yvelocity': {
             'min': 0.01,
             'max': 5,
-            'gen': lambda: random.lognormvariate(0.0, 0.5)/2
+            'gen': lambda: random.gammavariate(2, 0.3)
         },
 
         'x_prob_change_dir': {
