@@ -19,7 +19,7 @@ class Invader(sge.dsp.Object):
         'scale': {
             'min': 1,
             'max': 5,
-            'gen': lambda: random.gammavariate(2, 0.8)+1
+            'gen': lambda: random.gammavariate(4, 0.5)+1
         },
 
         'alpha': {
