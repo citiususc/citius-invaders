@@ -30,6 +30,8 @@ class Invader(sge.dsp.Object):
         self.attributes.update(kwargs)
         print self.attributes
 
+        self.genes = self.attributes
+
         super(Invader, self).__init__(sge.game.width/2., sge.game.height/2.- 80,
                                       sprite=sge.gfx.Sprite(name='invader'),
                                       image_blend=sge.gfx.Color('white'),
@@ -44,10 +46,10 @@ class Invader(sge.dsp.Object):
         self.image_blend = sge.gfx.Color([blend, blend, blend])
         self.image_xscale = scale
         self.image_yscale = scale
-        self.steps = 0
+        self.fitness = 0
 
     def event_step(self, time_passed, delta_mult):
-        self.steps += 1
+        self.fitness += 1
         # Change directions
         if random.random() <= self.attributes.get('x_prob_change_dir'):
             self.xvelocity = -self.xvelocity
@@ -71,7 +73,7 @@ class Invader(sge.dsp.Object):
     def compare_fitness(self, other):
         if not isinstance(other, Invader):
             raise ValueError('Incomparable types')
-        return self.steps.__cmp__(other.steps)
+        return self.fitness.__cmp__(other.fitness)
 
 
 class Player(sge.dsp.Object):

@@ -7,22 +7,42 @@ Created on Tue May  3 18:34:45 2016
 """
 
 import random
-import objects
 
-def mating_pool(population, num_of_children=10):
-    pool = []
-    # Sort the population
-    sorted_population = sorted(population, objects.Invader.compare_fitness)
-    # Get the maximum fitness
-    max_fitness = sorted_population[-1].steps
-    while len(pool) < num_of_children*2:
-        # Generate a random uniform number between [0, max_fitness]
-        r = random.uniform(0, max_fitness)
-        # Select the one according to the accumulative probability
-        for i in population:
-            if i.steps >= r:
-                pool.append(i)
+
+def recombinate(pairs):
+    offspring = []
+    for p1, p2 in pairs:
+        children_genes = {}
+        for gen in p1.genes.keys():
+            values = [p1.genes[gen], p2.genes[gen]]
+            children_genes[gen] = random.uniform(min(values), max(values))
+        offspring.append(children_genes)
+    return offspring
+
+
+def mating_pool(population, num_of_pairs=10, evaluator=lambda x: x.fitness):
+    evaluated_population = evaluate(population, evaluator=evaluator)
+    return zip(roulette_wheel(evaluated_population, k=num_of_pairs),
+               roulette_wheel(evaluated_population, k=num_of_pairs))
+
+
+def evaluate(population, evaluator=lambda x: x.fitness):
+    return map(lambda x: (x, evaluator(x)), population)
+
+
+def roulette_wheel(evaluated_population, k=10):
+    sum_fitness = sum([v[1] for v in evaluated_population])
+    selected = []
+    while len(selected) < k:
+        r = random.uniform(0, sum_fitness)
+        for i in evaluated_population:
+            r -= i[1]
+            if r < 0:
+                selected.append(i[0])
                 break
+    return selected
 
-    random.shuffle(pool)
-    return [(pool[i], pool[i+1]) for i in xrange(0, len(pool), 2)]
+
+if __name__ == '__main__':
+    pop = [15, 18, 30, 100, 120, 60, 35, 40, 42]
+    print mating_pool(pop, evaluator=lambda x: x)
