@@ -7,7 +7,6 @@ Created on Sat May  7 11:50:42 2016
 """
 
 import sge
-import random
 import objects
 import evolution
 
@@ -34,6 +33,7 @@ class InvadersGame(sge.dsp.Game):
     def __init__(self):
         """Initializes a new InvadersGame, with all parameters properly set"""
         super(InvadersGame, self).__init__(width=RESX, height=RESY, fps=120,
+                                           collision_events_enabled=False,
                                            window_text="CITIUS-invaders")
         self.gensprite = sge.gfx.Sprite(width=RESX, height=RESY, origin_x=0,
                                         origin_y=0)
@@ -56,16 +56,12 @@ class InvadersGame(sge.dsp.Game):
             lst = [o for o in self.current_room.objects
                                              if isinstance(o, objects.Invader)]
             pairs = evolution.mating_pool(lst, num_of_pairs=len(lst)/2)
-
-            #pairs = []
-            #while len(lst) > 1:
-            #    i1 = lst.pop(random.randrange(0, len(lst)))
-            #    i2 = lst.pop(random.randrange(0, len(lst)))
-            #    pairs.append((i1, i2))
-
             self.pairs = pairs
+            self.alarms['animation'] = 10
             self.pause(sprite=self.gensprite)
             self.alarms['generation'] = GENERATION_TIME
+        elif alarm_id == 'animation':
+            pass
 
     def event_close(self):
         self.end()
@@ -86,13 +82,16 @@ class InvadersGame(sge.dsp.Game):
                                      i2.x+i2.bbox_width/2,
                                      i2.y+i2.bbox_height/2,
                                      CITIUS_COLOR, thickness=2)
-            children_genes = evolution.recombinate([(i1, i2)], objects.Invader.gene_props)[0]
+            children_genes = evolution.recombinate([(i1, i2)],
+                                                 objects.Invader.gene_props)[0]
             #And add the new individual
             desc = objects.Invader(**children_genes)
-            desc.x, desc.y = (i1.x + i2.x)/2., (i1.y+i2.y)/2.
+            desc.x, desc.y = (i1.x + i2.x)/2, (i1.y+i2.y)/2
             self.current_room.add(desc)
         else:
+            print len(self.current_room.objects)
             self.unpause()
+
 
     def event_paused_key_press(self, key, char):
         if not self.pairs:

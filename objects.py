@@ -168,8 +168,10 @@ class PlayerBullet(sge.dsp.Object):
     def event_step(self, time_passed, delta_mult):
         if self.bbox_bottom < 0:
             self.destroy()
-
-    def event_collision(self, other, xdirection, ydirection):
-        if isinstance(other, Invader):
-            self.destroy()
-            other.destroy()
+        else:
+            #Collision detection only for bullets
+            killed = self.collision(other=Invader)
+            if killed:
+                #We only kill the first colliding Invader
+                killed[0].destroy()
+                self.destroy()
