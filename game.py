@@ -86,7 +86,7 @@ class InvadersGame(sge.dsp.Game):
                                      i2.x+i2.bbox_width/2,
                                      i2.y+i2.bbox_height/2,
                                      CITIUS_COLOR, thickness=2)
-            children_genes = evolution.recombinate([(i1, i2)])[0]
+            children_genes = evolution.recombinate([(i1, i2)], objects.Invader.gene_props)[0]
             #And add the new individual
             desc = objects.Invader(**children_genes)
             desc.x, desc.y = (i1.x + i2.x)/2., (i1.y+i2.y)/2.

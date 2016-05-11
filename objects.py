@@ -14,19 +14,61 @@ import random
 import game
 
 class Invader(sge.dsp.Object):
-    attr_generators = {
-        'scale': lambda: random.lognormvariate(0.5, 0.3)+1,
-        'alpha': lambda: random.randint(100, 255),
-        'xvelocity': lambda: random.lognormvariate(0.0, 0.5)/2,
-        'yvelocity': lambda: random.lognormvariate(0.0, 0.5)/2,
-        'x_prob_change_dir': lambda: random.uniform(0.0, 0.05),
-        'y_prob_change_dir': lambda: random.uniform(0.0, 0.05)
+
+    gene_props = {
+        'scale': {
+            'min': 1,
+            'max': 5,
+            'gen': lambda: random.lognormvariate(0.5, 0.3)+1
+        },
+
+        'alpha': {
+            'min': 20,
+            'max': 255,
+            'gen': lambda: random.randint(20, 255)
+        },
+
+        'xvelocity': {
+            'min': 0.01,
+            'max': 5,
+            'gen': lambda: random.lognormvariate(0.0, 0.5)/2
+        },
+
+        'yvelocity': {
+            'min': 0.01,
+            'max': 5,
+            'gen': lambda: random.lognormvariate(0.0, 0.5)/2
+        },
+
+        'x_prob_change_dir': {
+            'min': 0.01,
+            'max': 5,
+            'gen': lambda: random.uniform(0.0, 0.05)
+        },
+
+        'y_prob_change_dir': {
+            'min': 0.0,
+            'max': 0.07,
+            'gen': lambda: random.uniform(0.0, 0.05)
+        },
     }
+
+
+    @staticmethod
+    def _generate_gen(name):
+        v = Invader.gene_props[name]['gen']()
+        max_v = Invader.gene_props[name]['max']
+        min_v = Invader.gene_props[name]['min']
+        if v < min_v:
+            return min_v
+        elif v > max_v:
+            return max_v
+        else:
+            return v
 
     def __init__(self, **kwargs):
         # Generate random values and update with the ones provided in kwargs
-        self.attributes = {k: self.attr_generators.get(k)()
-                                          for k in self.attr_generators.keys()}
+        self.attributes = {k: self._generate_gen(k) for k in self.gene_props.keys()}
         self.attributes.update(kwargs)
         print self.attributes
 

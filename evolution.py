@@ -9,7 +9,7 @@ Created on Tue May  3 18:34:45 2016
 import random
 
 
-def recombinate(pairs, mutation_probability=0.1):
+def recombinate(pairs, gene_props, mutation_probability=0.1):
     offspring = []
     for p1, p2 in pairs:
         children_genes = {}
@@ -18,7 +18,7 @@ def recombinate(pairs, mutation_probability=0.1):
             children_genes[gen] = random.uniform(min(values), max(values))
             if random.random() < mutation_probability:
                 # Change this to apply the concrete generator for each variable
-                children_genes[gen] = random.random()
+                children_genes[gen] = random.uniform(gene_props[gen]['min'], gene_props[gen]['max'])
         offspring.append(children_genes)
     return offspring
 
