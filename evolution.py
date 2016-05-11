@@ -17,8 +17,10 @@ def recombinate(pairs, gene_props, mutation_probability=0.1):
             values = [p1.genes[gen], p2.genes[gen]]
             children_genes[gen] = random.uniform(min(values), max(values))
             if random.random() < mutation_probability:
-                # Change this to apply the concrete generator for each variable
-                children_genes[gen] = random.uniform(gene_props[gen]['min'], gene_props[gen]['max'])
+                min_v = gene_props[gen]['min']
+                max_v = gene_props[gen]['max']
+                rv = random.gauss(children_genes[gen], (max_v - min_v)*0.1)
+                children_genes[gen] = min(max(min_v, rv), max_v)
         offspring.append(children_genes)
     return offspring
 
