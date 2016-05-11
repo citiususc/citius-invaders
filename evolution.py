@@ -9,13 +9,16 @@ Created on Tue May  3 18:34:45 2016
 import random
 
 
-def recombinate(pairs):
+def recombinate(pairs, mutation_probability=0.1):
     offspring = []
     for p1, p2 in pairs:
         children_genes = {}
         for gen in p1.genes.keys():
             values = [p1.genes[gen], p2.genes[gen]]
             children_genes[gen] = random.uniform(min(values), max(values))
+            if random.random() < mutation_probability:
+                # Change this to apply the concrete generator for each variable
+                children_genes[gen] = random.random()
         offspring.append(children_genes)
     return offspring
 

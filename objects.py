@@ -39,7 +39,7 @@ class Invader(sge.dsp.Object):
 
         self.xvelocity = self.attributes.get('xvelocity')
         self.yvelocity = self.attributes.get('yvelocity')
-        blend = self.attributes.get('alpha')
+        blend = int(self.attributes.get('alpha'))
         scale = self.attributes.get('scale')
         self.bbox_width = (self.sprite.width * scale)
         self.bbox_height = (self.sprite.height * scale)

@@ -9,6 +9,7 @@ Created on Sat May  7 11:50:42 2016
 import sge
 import random
 import objects
+import evolution
 
 #Resolution constants
 RESX = 1024
@@ -54,11 +55,14 @@ class InvadersGame(sge.dsp.Game):
         if alarm_id == 'generation':
             lst = [o for o in self.current_room.objects
                                              if isinstance(o, objects.Invader)]
-            pairs = []
-            while len(lst) > 1:
-                i1 = lst.pop(random.randrange(0, len(lst)))
-                i2 = lst.pop(random.randrange(0, len(lst)))
-                pairs.append((i1, i2))
+            pairs = evolution.mating_pool(lst, num_of_pairs=len(lst)/2)
+
+            #pairs = []
+            #while len(lst) > 1:
+            #    i1 = lst.pop(random.randrange(0, len(lst)))
+            #    i2 = lst.pop(random.randrange(0, len(lst)))
+            #    pairs.append((i1, i2))
+
             self.pairs = pairs
             self.pause(sprite=self.gensprite)
             self.alarms['generation'] = GENERATION_TIME
@@ -82,8 +86,9 @@ class InvadersGame(sge.dsp.Game):
                                      i2.x+i2.bbox_width/2,
                                      i2.y+i2.bbox_height/2,
                                      CITIUS_COLOR, thickness=2)
+            children_genes = evolution.recombinate([(i1, i2)])[0]
             #And add the new individual
-            desc = objects.Invader()
+            desc = objects.Invader(**children_genes)
             desc.x, desc.y = (i1.x + i2.x)/2., (i1.y+i2.y)/2.
             self.current_room.add(desc)
         else:
