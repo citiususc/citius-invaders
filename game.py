@@ -9,6 +9,7 @@ Created on Sat May  7 11:50:42 2016
 import sge
 import objects
 import evolution
+import time
 
 #Resolution constants
 RESX = 1024
@@ -20,7 +21,7 @@ BULLET_START_SPEED = 20
 WALL_YOFFSET = 80
 WALL_HEIGHT = 8
 #Number of frames between generations
-GENERATION_TIME = 360
+GENERATION_TIME = 600
 #Citius color
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 
@@ -39,6 +40,7 @@ class InvadersGame(sge.dsp.Game):
                                         origin_y=0)
         self.alarms['generation'] = GENERATION_TIME
         self.pairs = None
+        self.anim_sleep = None
 
     def event_key_press(self, key, char):
         global game_in_progress
@@ -55,13 +57,11 @@ class InvadersGame(sge.dsp.Game):
         if alarm_id == 'generation':
             lst = [o for o in self.current_room.objects
                                              if isinstance(o, objects.Invader)]
-            pairs = evolution.mating_pool_tournament(lst, num_of_pairs=len(lst)/2)
-            self.pairs = pairs
-            self.alarms['animation'] = 10
-            self.pause(sprite=self.gensprite)
-            self.alarms['generation'] = GENERATION_TIME
-        elif alarm_id == 'animation':
-            pass
+            pairs = evolution.mating_pool_tournament(lst, num_of_pairs=len(lst) / 2)
+            if pairs:
+                self.pairs = pairs
+                self.pause(sprite=self.gensprite)
+                self.alarms['generation'] = GENERATION_TIME
 
     def event_close(self):
         self.end()
@@ -88,13 +88,24 @@ class InvadersGame(sge.dsp.Game):
             desc = objects.Invader(**children_genes)
             desc.x, desc.y = (i1.x + i2.x)/2, (i1.y+i2.y)/2
             self.current_room.add(desc)
-        else:
+            #Slow down painting to visually improve the animation
+            if self.anim_sleep is None:
+                #The animation time is adjusted according to the number of new
+                #individuals.
+                self.anim_sleep = (0 if len(self.pairs) > 50
+                                            else min(1.0, 3.0/len(self.pairs)))
+            else:
+                time.sleep(self.anim_sleep)
+        elif self.pairs is not None:
+            #Crossing is finished
             print len(self.current_room.objects)
+            time.sleep(self.anim_sleep)
+            self.pairs = self.anim_sleep = None
             self.unpause()
 
 
     def event_paused_key_press(self, key, char):
-        if not self.pairs:
+        if self.pairs is None:
             if key == 'escape':
                 # This allows the player to still exit while the game is
                 # paused, rather than having to unpause first.
