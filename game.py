@@ -18,8 +18,8 @@ RESY = 768
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
 BULLET_START_SPEED = 20
-WALL_YOFFSET = 80
-WALL_HEIGHT = 8
+WALL_YOFFSET = 70
+WALL_HEIGHT = 2
 #Number of frames between generations
 GENERATION_TIME = 600
 #Citius color
@@ -31,6 +31,7 @@ class InvadersGame(sge.dsp.Game):
     objects in the game.
     """
 
+
     def __init__(self):
         """Initializes a new InvadersGame, with all parameters properly set"""
         super(InvadersGame, self).__init__(width=RESX, height=RESY, fps=120,
@@ -38,9 +39,21 @@ class InvadersGame(sge.dsp.Game):
                                            window_text="CITIUS-invaders")
         self.gensprite = sge.gfx.Sprite(width=RESX, height=RESY, origin_x=0,
                                         origin_y=0)
+        self.scoresprite = sge.gfx.Sprite(width=320, height=120, origin_x=100, origin_y=100)
+        self.hud_font = sge.gfx.Font('minecraftia.ttf', size=20)
+
         self.alarms['generation'] = GENERATION_TIME
         self.pairs = None
+        self.score = 0
         self.anim_sleep = None
+
+    def show_hud(self):
+        hud_string = 'SCORE: {0:03d}  INVADERS: {1:03d}'
+        num_invaders = sum(1 for o in self.current_room.objects if isinstance(o, objects.Invader))
+        self.project_text(self.hud_font, hud_string.format(self.score, num_invaders), 5, 5, anti_alias=False)
+
+    def event_step(self, time_passed, delta_mult):
+        self.show_hud()
 
     def event_key_press(self, key, char):
         global game_in_progress
@@ -67,6 +80,8 @@ class InvadersGame(sge.dsp.Game):
         self.end()
 
     def event_paused_step(self, time_passed, delta_mult):
+        self.show_hud()
+
         if self.pairs:
             #Draw the next cross operation
             i1, i2 = self.pairs.pop()
@@ -102,6 +117,7 @@ class InvadersGame(sge.dsp.Game):
             print len(self.current_room.objects)
             time.sleep(self.anim_sleep)
             self.pairs = self.anim_sleep = None
+            self.score += 1
             self.unpause()
 
 
