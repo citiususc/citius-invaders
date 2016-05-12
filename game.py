@@ -55,7 +55,7 @@ class InvadersGame(sge.dsp.Game):
         if alarm_id == 'generation':
             lst = [o for o in self.current_room.objects
                                              if isinstance(o, objects.Invader)]
-            pairs = evolution.mating_pool(lst, num_of_pairs=len(lst)/2)
+            pairs = evolution.mating_pool_tournament(lst, num_of_pairs=len(lst)/2)
             self.pairs = pairs
             self.alarms['animation'] = 10
             self.pause(sprite=self.gensprite)

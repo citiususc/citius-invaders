@@ -9,7 +9,10 @@ Created on Tue May  3 18:34:45 2016
 import random
 
 
-def recombinate(pairs, gene_props, mutation_probability=0.1):
+def bound_value(v, min_v, max_v):
+    return min(max(min_v, v), max_v)
+
+def recombinate(pairs, gene_props, mutation_probability=0.1, effect=0.5):
     offspring = []
     for p1, p2 in pairs:
         children_genes = {}
@@ -19,8 +22,13 @@ def recombinate(pairs, gene_props, mutation_probability=0.1):
             if random.random() < mutation_probability:
                 min_v = gene_props[gen]['min']
                 max_v = gene_props[gen]['max']
-                rv = random.gauss(children_genes[gen], (max_v - min_v)*0.1)
-                children_genes[gen] = min(max(min_v, rv), max_v)
+                v = children_genes[gen]
+                rv = random.choice([-1, 1]) * random.uniform(0, effect*(max_v - min_v))
+                new_v_gauss = bound_value(random.gauss(v, (max_v-min_v)*effect), min_v, max_v)
+                new_v = bound_value(v+rv, min_v, max_v)
+                #print '----- Mutating ' + gen + ' - RV: ' + str(rv) + ' - V: ' + str(v) + ' - New: ' + str(new_v) + ' - Gaussian: ' + str(new_v_gauss)
+                #rv = random.uniform(children_genes[gen], (max_v - min_v)*0.1)
+                children_genes[gen] = new_v
         offspring.append(children_genes)
     return offspring
 
@@ -29,6 +37,17 @@ def mating_pool(population, num_of_pairs=10, evaluator=lambda x: x.fitness):
     evaluated_population = evaluate(population, evaluator=evaluator)
     return zip(roulette_wheel(evaluated_population, k=num_of_pairs),
                roulette_wheel(evaluated_population, k=num_of_pairs))
+
+
+def mating_pool_tournament(population, num_of_pairs=10, evaluator=lambda x: x.fitness):
+    pool = []
+    while len(pool) < num_of_pairs:
+        # Generate a pair for mating
+        p1 = p2 = None
+        while p1 == p2:
+            p1, p2 = tournament(population, evaluator, pool_size=2)
+        pool.append((p1, p2))
+    return pool
 
 
 def evaluate(population, evaluator=lambda x: x.fitness):
@@ -47,7 +66,15 @@ def roulette_wheel(evaluated_population, k=10):
                 break
     return selected
 
+def tournament(population, evaluator, k=2, pool_size=10):
+    pool = []
+    while len(pool) < pool_size:
+        samples = random.sample(population, k)
+        winner = max(samples, key=lambda x: evaluator(x))
+        pool.append(winner)
+    return pool
 
 if __name__ == '__main__':
     pop = [15, 18, 30, 100, 120, 60, 35, 40, 42]
     print mating_pool(pop, evaluator=lambda x: x)
+    print mating_pool_tournament(pop, evaluator=lambda x: x)

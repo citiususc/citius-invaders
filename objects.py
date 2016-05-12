@@ -23,7 +23,7 @@ class Invader(sge.dsp.Object):
         },
 
         'alpha': {
-            'min': 20,
+            'min': 15,
             'max': 255,
             'gen': lambda: random.randint(20, 255)
         },
@@ -70,7 +70,7 @@ class Invader(sge.dsp.Object):
         # Generate random values and update with the ones provided in kwargs
         self.attributes = {k: self._generate_gen(k) for k in self.gene_props.keys()}
         self.attributes.update(kwargs)
-        print self.attributes
+        #print self.attributes
 
         self.genes = self.attributes
 
