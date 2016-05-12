@@ -92,8 +92,9 @@ class InvadersGame(sge.dsp.Game):
             if self.anim_sleep is None:
                 #The animation time is adjusted according to the number of new
                 #individuals.
-                self.anim_sleep = (0 if len(self.pairs) > 50
-                                            else min(1.0, 3.0/len(self.pairs)))
+                self.anim_sleep = (1.0 if len(self.pairs) == 0
+                                       else 0 if len(self.pairs) > 50
+                                           else min(1.0, 3.0/len(self.pairs)))
             else:
                 time.sleep(self.anim_sleep)
         elif self.pairs is not None:
