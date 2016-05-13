@@ -148,7 +148,14 @@ class Player(sge.dsp.Object):
     def event_key_press(self, key, char):
         #Shooting
         if key == 'space':
-            sge.game.current_room.add(PlayerBullet(self))
+            #Check if we have munition
+            ninvaders = sum(1 for o in sge.game.current_room.objects
+                                                     if isinstance(o, Invader))
+            mode_rule = (sge.game.mode == 1 or
+                            not any(isinstance(o, PlayerBullet)
+                                       for o in sge.game.current_room.objects))
+            if mode_rule and ninvaders > 4:
+                sge.game.current_room.add(PlayerBullet(self))
 
 
 class PlayerBullet(sge.dsp.Object):
@@ -175,3 +182,4 @@ class PlayerBullet(sge.dsp.Object):
                 #We only kill the first colliding Invader
                 killed[0].destroy()
                 self.destroy()
+                sge.game.check_mode()

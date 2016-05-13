@@ -24,7 +24,8 @@ if __name__ == '__main__':
     # Create objects
     invaders = [objects.Invader() for _ in xrange(6)]
     player = objects.Player()
-    obj = invaders + [player]
+    #Player is always the first object
+    obj = [player] + invaders
 
     # Create room
     sge.game.start_room = game.GameRoom(obj, background=background)

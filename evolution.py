@@ -7,6 +7,7 @@ Created on Tue May  3 18:34:45 2016
 """
 
 import random
+from operator import attrgetter
 
 
 def bound_value(v, min_v, max_v):
@@ -34,23 +35,23 @@ def recombinate(pairs, gene_props, mutation_probability=0.1, effect=0.5):
     return offspring
 
 
-def mating_pool(population, num_of_pairs=10, evaluator=lambda x: x.fitness):
-    evaluated_population = evaluate(population, evaluator=evaluator)
+def mating_pool(population, num_of_pairs=10, evaluator=attrgetter('fitness')):
+    evaluated_population = evaluate(population, evaluator)
     return zip(roulette_wheel(evaluated_population, k=num_of_pairs),
                roulette_wheel(evaluated_population, k=num_of_pairs))
 
 
-def mating_pool_tournament(population, num_of_pairs=10, evaluator=lambda x: x.fitness):
+def mating_pool_tournament(population, num_of_pairs=10, evaluator=attrgetter('fitness')):
     pool = []
     while len(pool) < num_of_pairs:
         # Generate a pair for mating
         p1 = tournament(population, evaluator)
-        p2 = tournament([p for p in population if p is not p1], evaluator)
+        p2 = tournament(population - {p1}, evaluator)
         pool.append((p1, p2))
     return pool
 
 
-def evaluate(population, evaluator=lambda x: x.fitness):
+def evaluate(population, evaluator=attrgetter('fitness')):
     return map(lambda x: (x, evaluator(x)), population)
 
 
@@ -69,10 +70,10 @@ def roulette_wheel(evaluated_population, k=10):
 
 def tournament(population, evaluator, k=2):
     sample = population if len(population) < k else random.sample(population, k)
-    return max(sample, key=lambda x: evaluator(x))
+    return max(sample, key=evaluator)
 
 
 if __name__ == '__main__':
-    pop = [15, 18, 30, 100, 120, 60, 35, 40, 42]
+    pop = {15, 18, 30, 100, 120, 60, 35, 40, 42}
     print mating_pool(pop, evaluator=lambda x: x)
     print mating_pool_tournament(pop, evaluator=lambda x: x)
