@@ -85,7 +85,10 @@ class InvadersGame(sge.dsp.Game):
             global GENERATION_TIME
             inv = {o for o in self.current_room.objects
                                              if isinstance(o, objects.Invader)}
-            pairs = evolution.mating_pool_tournament(inv, len(inv)/2)
+            #The number of new individuals is determined by a box-cox
+            #transformation with lambda=0.6.
+            newinv = int(((len(inv)**0.6)-1)/0.6)
+            pairs = evolution.mating_pool_tournament(inv, newinv)
             if pairs:
                 self.pairs = pairs
                 self.pause(sprite=self.gensprite)
