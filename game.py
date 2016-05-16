@@ -28,6 +28,8 @@ MIN_GEN_TIME = 240
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 #Number of invaders to change the shooting mode
 MODE_THRES = 30
+#Number of invaders to lose the game
+MAX_NINV = 100
 
 class InvadersGame(sge.dsp.Game):
     """
@@ -65,6 +67,10 @@ class InvadersGame(sge.dsp.Game):
                    self.current_room.objects if isinstance(o, objects.Invader))
         self.project_text(self.hud_font, hud_string.format(self.score,
                                          num_invaders), 5, 5, anti_alias=False)
+        if num_invaders >= MAX_NINV:
+            self.project_text(sge.gfx.Font('minecraftia.ttf', size=70),
+                              'Game\nOver', RESX/2, 240, halign='center',
+                              valign='center')
 
     def event_step(self, time_passed, delta_mult):
         self.show_hud()
