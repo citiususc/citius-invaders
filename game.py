@@ -20,10 +20,10 @@ PLAYER_SPEED = 4
 BULLET_START_SPEED = 20
 WALL_YOFFSET = 70
 WALL_HEIGHT = 2
-#Number of frames between generations (it is reduced with each generation
+#Number of ms between generations (it is reduced with each generation
 #until a lower limit)
-GENERATION_TIME = 600
-MIN_GEN_TIME = 240
+GENERATION_TIME = 5000
+MIN_GEN_TIME = 2000
 #Citius color
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
 #Number of invaders to change the shooting mode
@@ -48,18 +48,16 @@ class InvadersGame(sge.dsp.Game):
         self.scoresprite = sge.gfx.Sprite(width=320, height=120,
                                           origin_x=100, origin_y=100)
         self.hud_font = sge.gfx.Font('minecraftia.ttf', size=20)
-
-        self.alarms['generation'] = GENERATION_TIME
         self.pairs = None
         self.score = 0
         self.anim_sleep = None
         self.mode = 0
+        self.last_gen = 0
 
     def check_mode(self):
         n_inv = sum(1 for o in self.current_room.objects
                                              if isinstance(o, objects.Invader))
         self.mode = 1 if n_inv > MODE_THRES else 0
-
 
     def show_hud(self):
         hud_string = 'SCORE: {0:03d}  INVADERS: {1:03d}'
@@ -72,8 +70,26 @@ class InvadersGame(sge.dsp.Game):
                               'Game\nOver', RESX/2, 240, halign='center',
                               valign='center')
 
+    def new_generation(self):
+        global GENERATION_TIME
+        inv = {o for o in self.current_room.objects
+                                         if isinstance(o, objects.Invader)}
+        #The number of new individuals is determined by a box-cox
+        #transformation with lambda=0.6.
+        newinv = int(((len(inv)**0.6)-1)/0.6)
+        pairs = evolution.mating_pool_tournament(inv, newinv)
+        if pairs:
+            self.pairs = pairs
+            self.pause(sprite=self.gensprite)
+            #Let's make it a bit harder
+            if GENERATION_TIME > MIN_GEN_TIME:
+                GENERATION_TIME -= 150
+
     def event_step(self, time_passed, delta_mult):
         self.show_hud()
+        self.last_gen += time_passed
+        if self.last_gen >= GENERATION_TIME:
+            self.new_generation()
 
     def event_key_press(self, key, char):
         global game_in_progress
@@ -85,23 +101,6 @@ class InvadersGame(sge.dsp.Game):
             self.event_close()
         elif key in ('p', 'enter'):
             self.pause()
-
-    def event_alarm(self, alarm_id):
-        if alarm_id == 'generation':
-            global GENERATION_TIME
-            inv = {o for o in self.current_room.objects
-                                             if isinstance(o, objects.Invader)}
-            #The number of new individuals is determined by a box-cox
-            #transformation with lambda=0.6.
-            newinv = int(((len(inv)**0.6)-1)/0.6)
-            pairs = evolution.mating_pool_tournament(inv, newinv)
-            if pairs:
-                self.pairs = pairs
-                self.pause(sprite=self.gensprite)
-                #Let's make it a bit harder
-                if GENERATION_TIME > MIN_GEN_TIME:
-                    GENERATION_TIME -= 20
-                self.alarms['generation'] = GENERATION_TIME
 
     def event_close(self):
         self.end()
@@ -147,8 +146,8 @@ class InvadersGame(sge.dsp.Game):
             self.pairs = self.anim_sleep = None
             self.score += 1
             self.check_mode()
+            self.last_gen = 0
             self.unpause()
-
 
     def event_paused_key_press(self, key, char):
         if key == 'escape':
