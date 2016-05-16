@@ -10,10 +10,11 @@ import sge
 import objects
 import evolution
 import time
+from pygame.time import Clock
 
 #Resolution constants
-RESX = 1024
-RESY = 768
+RESX = 800
+RESY = 600
 #Objects position
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
@@ -53,6 +54,7 @@ class InvadersGame(sge.dsp.Game):
         self.anim_sleep = None
         self.mode = 0
         self.last_gen = 0
+        self.clock = Clock()
 
     def check_mode(self):
         n_inv = sum(1 for o in self.current_room.objects
@@ -60,11 +62,13 @@ class InvadersGame(sge.dsp.Game):
         self.mode = 1 if n_inv > MODE_THRES else 0
 
     def show_hud(self):
-        hud_string = 'SCORE: {0:03d}  INVADERS: {1:03d}'
+        self.clock.tick()
+        fps = int(self.clock.get_fps())
+        hud_string = 'SCORE: {0:03d}  INVADERS: {1:03d}  FPS: {2:03d}'
         num_invaders = sum(1 for o in
                    self.current_room.objects if isinstance(o, objects.Invader))
         self.project_text(self.hud_font, hud_string.format(self.score,
-                                         num_invaders), 5, 5, anti_alias=False)
+                                         num_invaders, fps), 5, 5, anti_alias=False)
         if num_invaders >= MAX_NINV:
             self.project_text(sge.gfx.Font('minecraftia.ttf', size=70),
                               'Game\nOver', RESX/2, 240, halign='center',
