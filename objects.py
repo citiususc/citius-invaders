@@ -18,12 +18,12 @@ class Invader(sge.dsp.Object):
     gene_props = {
         'scale': {
             'min': 1,
-            'max': 5,
+            'max': 7,
             'gen': lambda: random.gammavariate(4, 0.5)+1
         },
 
         'alpha': {
-            'min': 15,
+            'min': 5,
             'max': 255,
             'gen': lambda: random.randint(20, 255)
         },
@@ -42,7 +42,7 @@ class Invader(sge.dsp.Object):
 
         'x_prob_change_dir': {
             'min': 0.01,
-            'max': 5,
+            'max': 0.07,
             'gen': lambda: random.uniform(0.0, 0.05)
         },
 
