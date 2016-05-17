@@ -26,7 +26,8 @@ WALL_HEIGHT = 2
 GENERATION_TIME = 5000
 MIN_GEN_TIME = 2000
 #Citius color
-CITIUS_COLOR = sge.gfx.Color("#EF7D10")
+CITIUS_COLOR = sge.gfx.Color('#EF7D10')
+IMMUNIT_COLOR = sge.gfx.Color('#15AFF0')
 #Minimum number of invaders that must survive
 MIN_NINV = 4
 #Number of invaders to lose the game
@@ -61,11 +62,17 @@ class InvadersGame(sge.dsp.Game):
         num_invaders = sum(1 for o in
                    self.current_room.objects if isinstance(o, objects.Invader))
         self.project_text(self.hud_font, hud_string.format(self.score,
-                                         num_invaders, fps), 5, 5, anti_alias=False)
+                                    num_invaders, fps), 5, 5, anti_alias=False)
         if num_invaders >= MAX_NINV:
             self.project_text(sge.gfx.Font('minecraftia.ttf', size=70),
                               'Game\nOver', RESX/2, 240, halign='center',
                               valign='center')
+        elif num_invaders <= MIN_NINV:
+            for inv in (o for o in self.current_room.objects
+                                            if isinstance(o, objects.Invader)):
+                self.project_circle(inv.x+inv.bbox_width/2,
+                                       inv.y+inv.bbox_height/2,
+                                       inv.bbox_width, outline=IMMUNIT_COLOR)
 
     def new_generation(self):
         global GENERATION_TIME
