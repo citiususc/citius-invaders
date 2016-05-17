@@ -13,8 +13,8 @@ import time
 from pygame.time import Clock
 
 #Resolution constants
-RESX = 800
-RESY = 600
+RESX = 960
+RESY = 540
 #Objects position
 PLAYER_YOFFSET = 50
 PLAYER_SPEED = 4
@@ -27,8 +27,8 @@ GENERATION_TIME = 5000
 MIN_GEN_TIME = 2000
 #Citius color
 CITIUS_COLOR = sge.gfx.Color("#EF7D10")
-#Number of invaders to change the shooting mode
-MODE_THRES = 30
+#Minimum number of invaders that must survive
+MIN_NINV = 4
 #Number of invaders to lose the game
 MAX_NINV = 100
 
@@ -37,7 +37,6 @@ class InvadersGame(sge.dsp.Game):
     Main class for the game. It manages the global actions affecting all the
     objects in the game.
     """
-
 
     def __init__(self):
         """Initializes a new InvadersGame, with all parameters properly set"""
@@ -52,14 +51,8 @@ class InvadersGame(sge.dsp.Game):
         self.pairs = None
         self.score = 0
         self.anim_sleep = None
-        self.mode = 0
         self.last_gen = 0
         self.clock = Clock()
-
-    def check_mode(self):
-        n_inv = sum(1 for o in self.current_room.objects
-                                             if isinstance(o, objects.Invader))
-        self.mode = 1 if n_inv > MODE_THRES else 0
 
     def show_hud(self):
         self.clock.tick()
@@ -149,7 +142,6 @@ class InvadersGame(sge.dsp.Game):
             time.sleep(self.anim_sleep)
             self.pairs = self.anim_sleep = None
             self.score += 1
-            self.check_mode()
             self.last_gen = 0
             self.unpause()
 
