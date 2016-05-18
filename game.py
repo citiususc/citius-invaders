@@ -53,6 +53,7 @@ class InvadersGame(sge.dsp.Game):
         self.score = 0
         self.anim_sleep = None
         self.last_gen = 0
+        self.game_over = False
         self.clock = Clock()
 
     def show_hud(self):
@@ -63,7 +64,7 @@ class InvadersGame(sge.dsp.Game):
                    self.current_room.objects if isinstance(o, objects.Invader))
         self.project_text(self.hud_font, hud_string.format(self.score,
                                     num_invaders, fps), 5, 5, anti_alias=False)
-        if num_invaders >= MAX_NINV:
+        if self.game_over:
             self.project_text(sge.gfx.Font('minecraftia.ttf', size=70),
                               'Game\nOver', RESX/2, RESY/2 - 140, halign='center',
                               valign='center')
@@ -87,7 +88,9 @@ class InvadersGame(sge.dsp.Game):
         num_invaders = sum(1 for o in
                    self.current_room.objects if isinstance(o, objects.Invader))
         self.show_hud()
-        self.last_gen += time_passed
+        self.game_over = num_invaders >= MAX_NINV
+        if not self.game_over:
+            self.last_gen += time_passed
         if self.last_gen >= GENERATION_TIME:
             self.new_generation()
         elif num_invaders <= MIN_NINV:
@@ -100,12 +103,12 @@ class InvadersGame(sge.dsp.Game):
 
     def event_key_press(self, key, char):
         if key == 'f8':
-            sge.gfx.Sprite.from_screenshot().save('screenshot.jpg')
+            sge.gfx.Sprite.from_screenshot().save(time.strftime('%Y-%m-%d_%H%M%S')+'.jpg')
         elif key == 'f11':
             self.fullscreen = not self.fullscreen
         elif key == 'escape':
             self.event_close()
-        elif key in ('p', 'enter'):
+        elif not self.game_over and key in ('p', 'enter'):
             self.pause()
 
     def event_close(self):
@@ -113,7 +116,6 @@ class InvadersGame(sge.dsp.Game):
 
     def event_paused_step(self, time_passed, delta_mult):
         self.show_hud()
-
         if self.pairs:
             #Draw the next cross operation
             i1, i2 = self.pairs.pop()

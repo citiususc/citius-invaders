@@ -147,7 +147,7 @@ class Player(sge.dsp.Object):
 
     def event_key_press(self, key, char):
         #Shooting
-        if key == 'space':
+        if not sge.game.game_over and key == 'space':
             #The number of invaders must be higher than the minimum allowed,
             #and the number of bullets lower than the maximum
             ninvaders = sum(1 for o in sge.game.current_room.objects
