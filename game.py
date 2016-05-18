@@ -67,12 +67,6 @@ class InvadersGame(sge.dsp.Game):
             self.project_text(sge.gfx.Font('minecraftia.ttf', size=70),
                               'Game\nOver', RESX/2, 240, halign='center',
                               valign='center')
-        elif num_invaders <= MIN_NINV:
-            for inv in (o for o in self.current_room.objects
-                                            if isinstance(o, objects.Invader)):
-                self.project_circle(inv.x+inv.bbox_width/2,
-                                       inv.y+inv.bbox_height/2,
-                                       inv.bbox_width, outline=IMMUNIT_COLOR)
 
     def new_generation(self):
         global GENERATION_TIME
@@ -90,13 +84,21 @@ class InvadersGame(sge.dsp.Game):
                 GENERATION_TIME -= 150
 
     def event_step(self, time_passed, delta_mult):
+        num_invaders = sum(1 for o in
+                   self.current_room.objects if isinstance(o, objects.Invader))
         self.show_hud()
         self.last_gen += time_passed
         if self.last_gen >= GENERATION_TIME:
             self.new_generation()
+        elif num_invaders <= MIN_NINV:
+            for inv in (o for o in self.current_room.objects
+                                            if isinstance(o, objects.Invader)):
+                self.project_circle(inv.x+inv.bbox_width/2,
+                                    inv.y+inv.bbox_height/2,
+                                    inv.bbox_width, outline=IMMUNIT_COLOR,
+                                    outline_thickness=2)
 
     def event_key_press(self, key, char):
-        global game_in_progress
         if key == 'f8':
             sge.gfx.Sprite.from_screenshot().save('screenshot.jpg')
         elif key == 'f11':
