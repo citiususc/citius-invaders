@@ -65,7 +65,7 @@ class InvadersGame(sge.dsp.Game):
                                     num_invaders, fps), 5, 5, anti_alias=False)
         if num_invaders >= MAX_NINV:
             self.project_text(sge.gfx.Font('minecraftia.ttf', size=70),
-                              'Game\nOver', RESX/2, 240, halign='center',
+                              'Game\nOver', RESX/2, RESY/2 - 140, halign='center',
                               valign='center')
 
     def new_generation(self):
