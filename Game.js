@@ -141,15 +141,8 @@ invadersApp.Game.prototype = {
 
         for (var i = 0; i < INITIAL_INVADERS; i++) this.objects.invaders.push(new Invader(this));
 
-        
-        this.player = this.add.sprite(this.game.width / 2, this.game.height - 30, 'nao');
-        this.player.anchor.setTo(0.5, 0.5);
-        this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
-        this.player.body.collideWorldBounds = true;
-
-
-        //var player = new Player(this);
-        //this.game.add.existing(player);
+        this.player = new invadersApp.Player(this);
+        this.game.add.existing(this.player);
 
         // create a new bitmap data object
         var wallBmp = this.game.add.bitmapData(this.game.width, 3);
@@ -168,17 +161,6 @@ invadersApp.Game.prototype = {
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.fireButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-
-        this.bullets = this.add.group();
-        this.bullets.enableBody = true;
-        this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-        this.bullets.createMultiple(6, 'bullet');
-        this.bullets.setAll('anchor.x', 0.5);
-        this.bullets.setAll('anchor.y', 1);
-        this.bullets.setAll('outOfBoundsKill', true);
-        this.bullets.setAll('checkWorldBounds', true);
-
 
         var readyText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'READY!', 5);
 
@@ -202,7 +184,7 @@ invadersApp.Game.prototype = {
 
         var that = this;
 
-        this.game.physics.arcade.overlap(this.bullets, this.objects.invaders, function (invader, bullet) {
+        this.game.physics.arcade.overlap(this.player.bullets, this.objects.invaders, function (invader, bullet) {
             bullet.kill();
             var alive = that.objects.invaders.filter(function (invader) {
                 return invader.alive;
@@ -218,48 +200,6 @@ invadersApp.Game.prototype = {
         }, null, this);
 
         this.game.physics.arcade.collide(this.wall, this.objects.invaders);
-
-        this.player.body.velocity.setTo(0, 0);
-
-        
-        if (this.cursors.left.isDown) {
-            if (this.player.scale.x > 0){
-                this.player.scale.x *= -1;
-            }
-            this.player.body.velocity.x = -250;
-        }
-        else if (this.cursors.right.isDown) {
-            if (this.player.scale.x < 0){
-                this.player.scale.x *= -1;
-            }
-            this.player.body.velocity.x = 250;
-        }
-
-        if (this.fireButton.isDown && this.readyToFire) {
-            this.readyToFire = false;
-
-            //  Grab the first bullet we can from the pool
-            if (this.game.time.now > this.lastShootAt + SHOOT_DELAY) {
-                this.lastShootAt = this.game.time.now;
-                var bullet = this.bullets.getFirstExists(false);
-                if (bullet) {
-                    //  And fire it
-                    var xpos;
-                    if (this.player.scale.x < 0){
-                        xpos = this.player.x - 21;
-                    } else {
-                        xpos = this.player.x + 21;
-                    }
-                    bullet.reset(xpos, this.player.y - 20);
-                    bullet.body.velocity.y = -1200;
-                }
-            }
-        }
-
-        if (this.fireButton.isUp){
-            this.readyToFire = true;
-        }
-        
 
     },
 

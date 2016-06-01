@@ -13,7 +13,7 @@ invadersApp.Player = function (ctx) {
 
 
     // Create a pool of bullets
-    this.bullets = this.add.group();
+    this.bullets = this.game.add.group();
     this.bullets.enableBody = true;
     this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
     this.bullets.createMultiple(6, 'bullet');
@@ -30,7 +30,10 @@ invadersApp.Player = function (ctx) {
 invadersApp.Player.prototype = Object.create(Phaser.Sprite.prototype);
 invadersApp.Player.prototype.constructor = invadersApp.Player;
 
-invadersApp.Player.update = function () {
+invadersApp.Player.prototype.update = function () {
+
+    this.body.velocity.setTo(0, 0);
+    
     if (this.ctx.cursors.left.isDown) {
         if (this.scale.x > 0){
             this.scale.x *= -1;
@@ -66,7 +69,7 @@ invadersApp.Player.update = function () {
         }
     }
 
-    if (this.fireButton.isUp){
+    if (this.ctx.fireButton.isUp){
         this.readyToFire = true;
     }
 };
