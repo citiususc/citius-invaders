@@ -1,0 +1,73 @@
+invadersApp = invadersApp || {};
+
+invadersApp.Player = function (ctx) {
+
+    this.ctx = ctx;
+    this.game = ctx.game;
+
+    Phaser.Sprite.call(this, this.game, this.game.width / 2, this.game.height - 30, 'nao');
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.anchor.setTo(0.5, 0.5);
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.collideWorldBounds = true;
+
+
+    // Create a pool of bullets
+    this.bullets = this.add.group();
+    this.bullets.enableBody = true;
+    this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    this.bullets.createMultiple(6, 'bullet');
+    this.bullets.setAll('anchor.x', 0.5);
+    this.bullets.setAll('anchor.y', 1);
+    this.bullets.setAll('outOfBoundsKill', true);
+    this.bullets.setAll('checkWorldBounds', true);
+
+    this.readyToFire = true;
+    this.lastShootAt = 0;
+
+};
+
+invadersApp.Player.prototype = Object.create(Phaser.Sprite.prototype);
+invadersApp.Player.prototype.constructor = invadersApp.Player;
+
+invadersApp.Player.update = function () {
+    if (this.ctx.cursors.left.isDown) {
+        if (this.scale.x > 0){
+            this.scale.x *= -1;
+        }
+        this.body.velocity.x = -250;
+    }
+    else if (this.ctx.cursors.right.isDown) {
+        if (this.scale.x < 0){
+            this.scale.x *= -1;
+        }
+        this.body.velocity.x = 250;
+    }
+
+    
+    if (this.ctx.fireButton.isDown && this.readyToFire) {
+        this.readyToFire = false;
+
+        //  Grab the first bullet we can from the pool
+        if (this.game.time.now > this.lastShootAt + 100) {
+            this.lastShootAt = this.game.time.now;
+            var bullet = this.bullets.getFirstExists(false);
+            if (bullet) {
+                //  And fire it
+                var xpos;
+                if (this.scale.x < 0){
+                    xpos = this.x - 21;
+                } else {
+                    xpos = this.x + 21;
+                }
+                bullet.reset(xpos, this.y - 20);
+                bullet.body.velocity.y = -1200;
+            }
+        }
+    }
+
+    if (this.fireButton.isUp){
+        this.readyToFire = true;
+    }
+};
+
