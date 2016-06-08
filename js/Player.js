@@ -1,7 +1,9 @@
-invadersApp = invadersApp || {};
+var invadersApp = invadersApp || {};
 
-invadersApp.Player = function (ctx) {
+invadersApp.Player = function (ctx, shootDelay) {
 
+    this.shootDelay = shootDelay;
+    if (this.shootDelay === undefined) { this.shootDelay = 150; }
     this.ctx = ctx;
     this.game = ctx.game;
 
@@ -32,6 +34,8 @@ invadersApp.Player.prototype.constructor = invadersApp.Player;
 
 invadersApp.Player.prototype.update = function () {
 
+    if (this.game.physics.arcade.isPaused) return;
+
     this.body.velocity.setTo(0, 0);
     
     if (this.ctx.cursors.left.isDown) {
@@ -52,7 +56,7 @@ invadersApp.Player.prototype.update = function () {
         this.readyToFire = false;
 
         //  Grab the first bullet we can from the pool
-        if (this.game.time.now > this.lastShootAt + 100) {
+        if (this.game.time.now > this.lastShootAt + this.shootDelay) {
             this.lastShootAt = this.game.time.now;
             var bullet = this.bullets.getFirstExists(false);
             if (bullet) {

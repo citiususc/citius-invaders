@@ -7,81 +7,6 @@ var MIN_INVADERS = 4;
 var INITIAL_INVADERS = 6;
 var MIN_GENERATION_TIME = Phaser.Time.SECOND * 2;
 
-// Extended sprite object for Invaders
-Invader = function (ctx, genes, x, y) {
-
-    var game = ctx.game;
-    x = x || game.world.randomX;
-    y = y || game.world.randomY % (game.world.height - WALL_MARGIN * 1.5) ;
-    Phaser.Sprite.call(this, game, x, y, 'invader');
-    game.physics.enable(this, Phaser.Physics.ARCADE);
-
-    // Initialize genes by getting the default values from settings.json
-    this.genes = genes || function () {
-            var settings = ctx.settings;
-            var genes = {};
-            for(var gene in settings.genes){
-                genes[gene] = game.rnd.realInRange(settings.genes[gene].min, settings.genes[gene].max);
-            }
-            return genes;
-        }();
-
-    this.anchor.setTo(0.5, 0.5);
-
-    var alpha = Math.round(this.genes['alpha']);
-    this.tint = Phaser.Color.getColor(alpha, alpha, alpha);
-    this.body.velocity.x = this.genes['xvelocity'];
-    this.body.velocity.y = this.genes['yvelocity'];
-    this.scale.setTo(this.genes['scale'], this.genes['scale']);
-    this.body.collideWorldBounds = true;
-    this.body.bounce.set(1);
-
-    // Used to control the probability of x-y change in direction
-    this.lastTimeChanged = 0;
-
-    // Create a shield
-    var shield = this.game.make.graphics(0,0);
-    shield.lineStyle(1, 0x15AFF0, 1);
-    shield.drawCircle(-0.5, -0.5, 22);
-    //shield.anchor.setTo(0.5, 0.5);
-    this.addChild(shield);
-    shield.visible = false;
-
-    // Add the invader to the game (move this outside this class?)
-    game.add.existing(this);
-};
-
-Invader.prototype = Object.create(Phaser.Sprite.prototype);
-Invader.prototype.constructor = Invader;
-Invader.prototype.update = function() {
-    // Decide if it is time to change direction.
-    if (this.game.time.now > this.lastTimeChanged + DIR_CHANGE_MIN_TIME) {
-        this.lastTimeChanged = this.game.time.now;
-        if (this.game.rnd.frac() < this.genes['x_prob_change_dir']) {
-            this.body.velocity.x = -this.body.velocity.x;
-        }
-        if (this.game.rnd.frac() < this.genes['y_prob_change_dir']) {
-            this.body.velocity.y = -this.body.velocity.y;
-        }
-    }
-};
-Invader.prototype.showField = function (show, color) {
-    if (show == undefined) show = true;
-    if (color == undefined) color = 0x15AFF0;
-    this.getChildAt(0).tilt = color;
-    this.getChildAt(0).visible = show;
-};
-Invader.prototype.freeze = function (freeze) {
-    if (freeze == undefined) freeze = true;
-    if (freeze){
-        this.body.velocity.setTo(0, 0);
-    } else {
-        this.body.velocity.x = this.genes['xvelocity'];
-        this.body.velocity.y = this.genes['yvelocity'];
-    }
-};
-
-
 
 invadersApp.Game = function (game) {
     
@@ -139,7 +64,7 @@ invadersApp.Game.prototype = {
         // Initialize
         this.objects.invaders = [];
 
-        for (var i = 0; i < INITIAL_INVADERS; i++) this.objects.invaders.push(new Invader(this));
+        for (var i = 0; i < INITIAL_INVADERS; i++) this.objects.invaders.push(new invadersApp.Invader(this));
 
         this.player = new invadersApp.Player(this);
         this.game.add.existing(this.player);
@@ -192,7 +117,6 @@ invadersApp.Game.prototype = {
             if (alive > MIN_INVADERS){
                 invader.kill();
             } else {
-                // Draw circle?
                 that.objects.invaders.forEach(function (invader) {
                     invader.showField(true);
                 });
