@@ -58,6 +58,12 @@ invadersApp.Game.prototype = {
         // Initialize basic physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+        // Add HUDs
+        this.scoreText = invadersApp.utils.addText(this, 60, 20, 'SCORE:', 2);
+        this.scoreHud = invadersApp.utils.addText(this, this.scoreText.img.x + this.scoreText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
+        this.invadersText = invadersApp.utils.addText(this, this.scoreHud.img.x + this.scoreHud.img.width + 80, 20, 'INVADERS:', 2);
+        this.invadersHud = invadersApp.utils.addText(this, this.invadersText.img.x + this.invadersText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
+
         // Group of invaders
         this.objects.invaders = this.add.group();
         this.objects.invaders.enableBody = true;
@@ -94,9 +100,14 @@ invadersApp.Game.prototype = {
         var readyText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'READY!', 5);
         this.game.input.keyboard.onDownCallback = function () {
             that.game.paused = false;
-            if (readyText.visible) readyText.kill();
+            if (readyText.img.visible) readyText.img.kill();
         };
+
+        this.updateCounter();
+
         this.game.paused = true;
+
+
     },
 
     update: function () {
@@ -110,7 +121,10 @@ invadersApp.Game.prototype = {
         this.game.physics.arcade.overlap(this.player.bullets, this.objects.invaders, function (bullet, invader) {
             bullet.kill();
             var living = that.objects.invaders.countLiving();
-            if (living > MIN_INVADERS) invader.kill();
+            if (living > MIN_INVADERS) {
+                invader.kill();
+                that.updateCounter();
+            }
             if (living == MIN_INVADERS + 1) {
                 that.objects.invaders.forEachAlive(function (invader) {
                     invader.showField();
@@ -174,6 +188,9 @@ invadersApp.Game.prototype = {
                 this.currentGenerationTime -= 150;
                 console.log(this.currentGenerationTime);
             }
+
+            this.updateCounter();
+            this.updateScore();
         }
 
     },
@@ -192,6 +209,14 @@ invadersApp.Game.prototype = {
         this.wall = this.add.sprite(0, this.game.height - WALL_MARGIN, wallBmp);
         this.game.physics.enable(this.wall, Phaser.Physics.ARCADE);
         this.wall.body.immovable = true;
+    },
+
+    updateScore: function () {
+        this.scoreHud.font.text = invadersApp.utils.pad(this.currentGeneration, 3);
+    },
+
+    updateCounter: function () {
+        this.invadersHud.font.text = invadersApp.utils.pad(this.objects.invaders.countLiving(), 3);
     }
 
 };

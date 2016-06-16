@@ -20,7 +20,7 @@ invadersApp.Preloader.prototype = {
 		//loadingText.anchor.x = 0.5;
 		//loadingText.anchor.setTo(0.5, 0.5);
 
-		this.preloadBar = this.add.sprite(this.game.width / 2, loadingText.y + 40, 'preloaderBar');
+		this.preloadBar = this.add.sprite(this.game.width / 2, loadingText.img.y + 40, 'preloaderBar');
 		this.preloadBar.anchor.setTo(0.5, 0.5);
         //this.preloadBar.tint =
 

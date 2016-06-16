@@ -40,13 +40,13 @@ invadersApp.MainMenu.prototype = {
 		//var titleText = this.add.bitmapText(this.game.width / 2, 50, 'minecraftia', 'CiTIUS INVADERS', 50);
 		//titleText.anchor.x = 0.5;
         var textPressStart = invadersApp.utils.addText(this, this.game.width / 2, titleYPos + 200, 'PRESS START', 2);
-        textPressStart.visible = false;
+        textPressStart.img.visible = false;
 
 		//var startEntry = this.addMenuEntry('START GAME', titleYPos + 160, this.startGame);
 		//this.addMenuEntry('CONFIGURE', startEntry.y + 40);
 
         var textCopyright = invadersApp.utils.addText(this, this.game.width / 2, logo.y + 40, 'CENTRO SINGULAR DE INVESTIGACION EN TECNOLOXIAS DA INFORMACION', 1);
-        textCopyright.visible = false;
+        textCopyright.img.visible = false;
 
 
 
@@ -62,12 +62,12 @@ invadersApp.MainMenu.prototype = {
         tweenTitle.onComplete.add(function () {
             // Show bottom info
             logo.visible = true;
-            textCopyright.visible = true;
-            textPressStart.visible = true;
+            textCopyright.img.visible = true;
+            textPressStart.img.visible = true;
 
             // Start blinking event for 'PRESS START'
             this.game.time.events.loop(Phaser.Timer.HALF, function () {
-                textPressStart.visible = !textPressStart.visible;
+                textPressStart.img.visible = !textPressStart.img.visible;
             }, this);
 
             //this.music.play('', 0, 1, true, true);
