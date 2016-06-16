@@ -34,6 +34,8 @@ invadersApp.Invader = function (ctx, genes, x, y) {
     // Used to control the probability of x-y change in direction
     this.lastTimeChanged = 0;
 
+    this.fitness = 0;
+
     // Create a shield
     var shield = this.game.make.graphics(0,0);
     shield.lineStyle(1, 0x15AFF0, 1);
@@ -75,4 +77,7 @@ invadersApp.Invader.prototype.freeze = function (freeze) {
         this.body.velocity.x = this.genes['xvelocity'];
         this.body.velocity.y = this.genes['yvelocity'];
     }
+};
+invadersApp.Invader.prototype.increaseFitness = function () {
+  this.fitness++;
 };

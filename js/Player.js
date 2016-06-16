@@ -42,13 +42,13 @@ invadersApp.Player.prototype.update = function () {
         if (this.scale.x > 0){
             this.scale.x *= -1;
         }
-        this.body.velocity.x = -250;
+        this.body.velocity.x = -500;
     }
     else if (this.ctx.cursors.right.isDown) {
         if (this.scale.x < 0){
             this.scale.x *= -1;
         }
-        this.body.velocity.x = 250;
+        this.body.velocity.x = 500;
     }
 
     
@@ -68,7 +68,7 @@ invadersApp.Player.prototype.update = function () {
                     xpos = this.x + 21;
                 }
                 bullet.reset(xpos, this.y - 20);
-                bullet.body.velocity.y = -1200;
+                bullet.body.velocity.y = -2000;
             }
         }
     }

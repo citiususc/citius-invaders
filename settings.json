@@ -11,11 +11,11 @@
     },
     "xvelocity": {
       "min": 0,
-      "max": 150
+      "max": 300
     },
     "yvelocity": {
       "min": 0,
-      "max": 150
+      "max": 300
     },
     "x_prob_change_dir": {
       "min": 0.00,
