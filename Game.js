@@ -1,4 +1,4 @@
-// Game global config vars
+// Game global config vars [MOVE TO SETTINGS]
 
 var WALL_MARGIN = 80;
 var DIR_CHANGE_MIN_TIME = 10;
@@ -62,28 +62,18 @@ invadersApp.Game.prototype = {
         this.objects.invaders = this.add.group();
         this.objects.invaders.enableBody = true;
         this.objects.invaders.physicsBodyType = Phaser.Physics.ARCADE;
-
-
         for (var i = 0; i < INITIAL_INVADERS; i++) this.objects.invaders.add(new invadersApp.Invader(this));
 
+        // Create and add the main player
         this.player = new invadersApp.Player(this);
         this.game.add.existing(this.player);
 
+        // Create a white, immovable wall with physics enabled
         this.createWall();
 
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.fireButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-        var readyText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'READY!', 5);
-
-        this.game.input.keyboard.onDownCallback = function () {
-            that.game.paused = false;
-            if (readyText.visible){
-                readyText.kill();
-            }
-        };
-
-        this.game.paused = true;
 
         // New generation event, check for every second
         this.game.time.events.loop(Phaser.Timer.SECOND, this.createGeneration, this);
@@ -99,6 +89,14 @@ invadersApp.Game.prototype = {
             }, this);
         }, this);
 
+
+        // Start the game paused with the message READY!
+        var readyText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'READY!', 5);
+        this.game.input.keyboard.onDownCallback = function () {
+            that.game.paused = false;
+            if (readyText.visible) readyText.kill();
+        };
+        this.game.paused = true;
     },
 
     update: function () {
@@ -106,7 +104,7 @@ invadersApp.Game.prototype = {
         var that = this;
 
         // If physics are paused, skip all
-        // if (this.game.physics.arcade.isPaused) return;
+        if (this.game.physics.arcade.isPaused) return;
 
         this.game.physics.arcade.collide(this.wall, this.objects.invaders);
         this.game.physics.arcade.overlap(this.player.bullets, this.objects.invaders, function (bullet, invader) {
