@@ -34,17 +34,17 @@ invadersApp.evolution = {
     pool: function(population, size){
         var pool = [];
         while (pool.length < size){
-            var p1 = this.binary_tournament(population);
+            var p1 = this.binaryTournament(population);
             // Copy and remove the selected invader
             var pop2 = population.slice(0);
             pop2.splice(pop2.indexOf(p1),1);
-            var p2 = this.binary_tournament(pop2);
+            var p2 = this.binaryTournament(pop2);
             pool.push([p1, p2]);
         }
         return pool;
     },
 
-    binary_tournament: function(population){
+    binaryTournament: function(population){
         var invader1 = this.pick(population);
         var invader2 = this.pick(population);
 
