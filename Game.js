@@ -69,22 +69,20 @@ invadersApp.Game.prototype = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
 
-        // Add HUDs
-        this.scoreText = invadersApp.utils.addText(this, 60, 20, 'SCORE:', 2);
-        this.scoreHud = invadersApp.utils.addText(this, this.scoreText.img.x + this.scoreText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
-        this.invadersText = invadersApp.utils.addText(this, this.scoreHud.img.x + this.scoreHud.img.width + 80, 20, 'INVADERS:', 2);
-        this.invadersHud = invadersApp.utils.addText(this, this.invadersText.img.x + this.invadersText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
-
-        // Create a line for the animations during evolution
-        // http://www.html5gamedevs.com/topic/14954-how-to-animate-line-without-using-spritesheet/
-
         // Group of invaders
         this.objects.invaders = this.add.group();
         this.objects.invaders.enableBody = true;
         this.objects.invaders.physicsBodyType = Phaser.Physics.ARCADE;
+
         for (var i = 0; i < INITIAL_INVADERS; i++) {
             this.objects.invaders.add(new invadersApp.Invader(this, null, this.game.world.width/2, this.game.world.height/2));
         }
+
+        // Add HUDs (before the invaders group to appear over them)
+        this.scoreText = invadersApp.utils.addText(this, 60, 20, 'SCORE:', 2);
+        this.scoreHud = invadersApp.utils.addText(this, this.scoreText.img.x + this.scoreText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
+        this.invadersText = invadersApp.utils.addText(this, this.scoreHud.img.x + this.scoreHud.img.width + 80, 20, 'INVADERS:', 2);
+        this.invadersHud = invadersApp.utils.addText(this, this.invadersText.img.x + this.invadersText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
 
         // Create and add the main player
         this.player = new invadersApp.Player(this);
@@ -118,7 +116,7 @@ invadersApp.Game.prototype = {
         var that = this;
 
         // If physics are paused, skip all
-        if (this.game.physics.arcade.isPaused || this.gameState == invadersApp.GameState.PAUSED) return;
+        if (this.game.physics.arcade.isPaused) return;
 
         // Detect collisions with the wall and with the bullets
         this.game.physics.arcade.collide(this.wall, this.objects.invaders);
@@ -158,16 +156,26 @@ invadersApp.Game.prototype = {
         this.game.physics.arcade.isPaused = false;
         this.gameState = invadersApp.GameState.RUNNING;
     },
-
+    
+    gameOver: function () {
+        invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'GAME OVER!', 5);
+        this.gameState = invadersApp.GameState.GAME_OVER;
+    },
     
     updateEvolution: function () {
         var that = this;
 
         if (this.gameState == invadersApp.GameState.RUNNING &&
-            this.game.time.now > this.lastGenerationTime + this.currentGenerationTime) {
+            (this.game.time.now > this.lastGenerationTime + this.currentGenerationTime)) {
 
             // Pause the game during the animation
             this.pauseGame();
+
+            var evolutionText;
+
+            if (this.animationDelay > 500) {
+                evolutionText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'EVOLUTION TIME', 5);
+            }
 
             // The number of invaders
             var alive = this.objects.invaders.countLiving();
@@ -187,15 +195,15 @@ invadersApp.Game.prototype = {
 
             // A timer for playing animations during the reproduction phase
             this.animationTimer = this.game.time.create(true);
-            this.childIndex = 0;
+            var childIndex = 0;
 
             this.animationTimer.repeat(this.animationDelay, offspring.length + 1, function () {
-                if (this.childIndex == offspring.length) return;
+                if (childIndex == offspring.length) return;
 
                 // Disable shields for all the invaders
                 aliveInvaders.callAll('hideShield');
 
-                var p = offspring[this.childIndex++];
+                var p = offspring[childIndex++];
                 var x = (p[0].x + p[1].x)/2;
                 var y = (p[0].y + p[1].y)/2;
                 that.objects.invaders.add(new invadersApp.Invader(that, p[2], x, y));
@@ -210,6 +218,7 @@ invadersApp.Game.prototype = {
                 p[0].drawShield(ORANGE);
                 p[1].drawShield(ORANGE);
 
+                // Count the new children added to the game
                 this.updateCounter();
             }, this);
 
@@ -224,21 +233,29 @@ invadersApp.Game.prototype = {
                     this.currentGenerationTime -= 150;
                 }
 
-                // Decrease the animation  time
+                // Decrease the animation time
                 if (this.animationDelay > 50){
                     this.animationDelay -= 150;
                 }
 
+                if (evolutionText != undefined){
+                    evolutionText.img.destroy();
+                    evolutionText = null;
+                }
+
                 this.updateScore();
 
-                // Clear graphics
+                // Clear all lines
                 this.bgraphics.clear();
+
+                this.resumeGame();
+
+                if (this.objects.invaders.countLiving() >= 100){
+                    this.gameOver();
+                }
 
                 // Update the last generation time after completion
                 this.lastGenerationTime = this.game.time.now;
-                this.resumeGame();
-
-
 
             }, this);
 
@@ -268,7 +285,8 @@ invadersApp.Game.prototype = {
     },
 
     updateCounter: function () {
-        this.invadersHud.font.text = invadersApp.utils.pad(this.objects.invaders.countLiving(), 3);
+        var living = this.objects.invaders.countLiving();
+        this.invadersHud.font.text = invadersApp.utils.pad(living, 3);
     }
 
 };
