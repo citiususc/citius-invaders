@@ -14,8 +14,13 @@ invadersApp.Invader = function (ctx, genes, x, y) {
     this.genes = genes || function () {
             var settings = ctx.settings;
             var genes = {};
-            for(var gene in settings.genes){
-                genes[gene] = game.rnd.realInRange(settings.genes[gene].min, settings.genes[gene].max);
+            for(var gen in settings.genes){
+                var min = settings.genes[gen].min;
+                var max = settings.genes[gen].max;
+                //genes[gen] = chance.normal({mean: ((max-min)/2)+min, dev: (max-min)/6});
+                genes[gen] = chance.normal({mean: settings.genes[gen].mean, dev: (max-min)/6});
+                if (genes[gen] < min) genes[gen] = min;
+                if (genes[gen] > max) genes[gen] = max;
             }
             return genes;
         }();
@@ -38,7 +43,7 @@ invadersApp.Invader = function (ctx, genes, x, y) {
 
     // Create a shield
     this.shieldGraphics = this.game.make.graphics(0,0);
-    
+
     // Add the invader to the game (move this outside this class?)
     game.add.existing(this);
 };

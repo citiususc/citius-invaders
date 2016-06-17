@@ -5,8 +5,10 @@
 var invadersApp = invadersApp || {};
 
 invadersApp.evolution = {
-    evolve: function(pool, genes, mutation){
-        if (mutation === undefined) { mutation = 0.1 };
+    evolve: function(pool, genes, mutation, effect){
+        // Load from settings
+        if (mutation === undefined) { mutation = 0.1 }
+        if (effect === undefined) { effect = 0.5 }
         var offspring = [];
         pool.forEach(function (pair) {
             var p1 = pair[0];
@@ -22,7 +24,10 @@ invadersApp.evolution = {
                     children[gen] = Math.random() * (max - min) + min;
                     if (Math.random() < mutation) {
                         // Mutate this gene
-                        children[gen] = Math.random() * (genes[gen].max - genes[gen].min) + genes[gen].min;
+                        var value = chance.pickone([-1.0, 1.0]) * Math.random() * (genes[gen].max - genes[gen].min) * effect;
+                        children[gen] = children[gen] + value;
+                        if (children[gen] < genes[gen].min) children[gen] = genes[gen].min;
+                        if (children[gen] > genes[gen].max) children[gen] = genes[gen].max;
                     }
                 }
             }
