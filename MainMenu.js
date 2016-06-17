@@ -87,29 +87,8 @@ invadersApp.MainMenu.prototype = {
 	},
 
 	startGame: function (pointer) {
-
 		this.music.stop();
 		this.state.start('Game');
-
-	},
-
-	addMenuEntry: function(text, y, clickEvent) {
-
-        var entryText = invadersApp.utils.addText(this, this.game.width / 2, y, text, 3);
-		//var entryText = this.add.bitmapText(0, y, 'minecraftia', text, 27);
-		//entryText.anchor.x = 0.5;
-		//entryText.x = this.game.width / 2 - entryText.textWidth / 2;
-		//entryText.x = this.game.width / 2;
-		entryText.inputEnabled = true;
-		clickEvent = clickEvent || function () {};
-		entryText.events.onInputDown.add(clickEvent, this);
-		entryText.events.onInputOver.add(function (){
-			entryText.tint = 0xf345ff
-		}, this);
-		entryText.events.onInputOut.add(function () {
-			entryText.tint = 0xffffff
-		}, this);
-		return entryText;
 	}
 
 };

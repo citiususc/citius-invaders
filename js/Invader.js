@@ -26,8 +26,8 @@ invadersApp.Invader = function (ctx, genes, x, y) {
     this.tint = Phaser.Color.getColor(alpha, alpha, alpha);
     this.body.velocity.x = this.genes['xvelocity'];
     this.body.velocity.y = this.genes['yvelocity'];
-    var scale = this.genes['scale'];
-    this.scale.setTo(scale, scale);
+    this.scaleValue = this.genes['scale'];
+    this.scale.setTo(this.scaleValue, this.scaleValue);
     this.body.collideWorldBounds = true;
     this.body.bounce.set(1);
 
@@ -37,14 +37,8 @@ invadersApp.Invader = function (ctx, genes, x, y) {
     this.fitness = 0;
 
     // Create a shield
-    var shield = this.game.make.graphics(0,0);
-    shield.lineStyle(1, 0x15AFF0, 1);
-    shield.drawCircle(-0.5, -0.5, 15*scale);
-    //shield.anchor.setTo(0.5, 0.5);
-    this.addChild(shield);
-    shield.visible = false;
-    shield.scale.setTo(1.5/scale, 1.5/scale);
-
+    this.shieldGraphics = this.game.make.graphics(0,0);
+    
     // Add the invader to the game (move this outside this class?)
     game.add.existing(this);
 };
@@ -63,20 +57,18 @@ invadersApp.Invader.prototype.update = function() {
         }
     }
 };
-invadersApp.Invader.prototype.showField = function (show, color) {
-    if (show == undefined) show = true;
-    if (color == undefined) color = 0x15AFF0;
-    this.getChildAt(0).tilt = color;
-    this.getChildAt(0).visible = show;
+invadersApp.Invader.prototype.drawShield = function (color) {
+    this.shieldGraphics.clear();
+    this.shieldGraphics.lineStyle(1, color, 1);
+    this.shieldGraphics.drawCircle(-0.5, -0.5, 15 * this.scaleValue);
+    this.addChildAt(this.shieldGraphics, 0);
+    this.shieldGraphics.visible = true;
+    this.shieldGraphics.scale.setTo(1.5/this.scaleValue, 1.5/this.scaleValue);
 };
-invadersApp.Invader.prototype.freeze = function (freeze) {
-    if (freeze == undefined) freeze = true;
-    if (freeze){
-        this.body.velocity.setTo(0, 0);
-    } else {
-        this.body.velocity.x = this.genes['xvelocity'];
-        this.body.velocity.y = this.genes['yvelocity'];
-    }
+invadersApp.Invader.prototype.hideShield = function (color) {
+    this.shieldGraphics.clear();
+    this.shieldGraphics.visible = false;
+    //this.removeChildAt(0);
 };
 invadersApp.Invader.prototype.increaseFitness = function () {
   this.fitness++;

@@ -6,7 +6,14 @@ var SHOOT_DELAY = 100;
 var MIN_INVADERS = 4;
 var INITIAL_INVADERS = 6;
 var MIN_GENERATION_TIME = Phaser.Timer.SECOND * 2;
+var BLUE = 0x15AFF0;
+var ORANGE = 0xEF7D10;
 
+invadersApp.GameState = {
+    PAUSED : 0,
+    RUNNING : 1,
+    GAME_OVER : 2
+};
 
 invadersApp.Game = function (game) {
     
@@ -38,8 +45,11 @@ invadersApp.Game = function (game) {
     this.cursors;
     this.fireButton;
 
+
+    this.gameState = invadersApp.GameState.PAUSED;
     this.lastShootAt = 0;
     this.readyToFire = true;
+    this.animationDelay = Phaser.Timer.SECOND;
 };
 
 invadersApp.Game.prototype = {
@@ -58,17 +68,23 @@ invadersApp.Game.prototype = {
         // Initialize basic physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
+
         // Add HUDs
         this.scoreText = invadersApp.utils.addText(this, 60, 20, 'SCORE:', 2);
         this.scoreHud = invadersApp.utils.addText(this, this.scoreText.img.x + this.scoreText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
         this.invadersText = invadersApp.utils.addText(this, this.scoreHud.img.x + this.scoreHud.img.width + 80, 20, 'INVADERS:', 2);
         this.invadersHud = invadersApp.utils.addText(this, this.invadersText.img.x + this.invadersText.img.width / 2 + 30, 20, invadersApp.utils.pad(0, 3), 2);
 
+        // Create a line for the animations during evolution
+        // http://www.html5gamedevs.com/topic/14954-how-to-animate-line-without-using-spritesheet/
+
         // Group of invaders
         this.objects.invaders = this.add.group();
         this.objects.invaders.enableBody = true;
         this.objects.invaders.physicsBodyType = Phaser.Physics.ARCADE;
-        for (var i = 0; i < INITIAL_INVADERS; i++) this.objects.invaders.add(new invadersApp.Invader(this));
+        for (var i = 0; i < INITIAL_INVADERS; i++) {
+            this.objects.invaders.add(new invadersApp.Invader(this, null, this.game.world.width/2, this.game.world.height/2));
+        }
 
         // Create and add the main player
         this.player = new invadersApp.Player(this);
@@ -77,37 +93,24 @@ invadersApp.Game.prototype = {
         // Create a white, immovable wall with physics enabled
         this.createWall();
 
+        // A PIXI graphics for drawing lines
+        this.bgraphics = this.game.add.graphics(0, 0);
+
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.fireButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-
-        // New generation event, check for every second
-        this.game.time.events.loop(Phaser.Timer.SECOND, this.createGeneration, this);
-
-
-        // Gargabe collect killed invaders. If the invaders are
-        // destroyed on a bullet hit, it may produce an exception
-        // from physics module if there is a concurrent collision
-        // detection going on
-        this.game.time.events.loop(Phaser.Timer.SECOND * 5, function () {
-            this.objects.invaders.forEachDead(function (invader) {
-                invader.destroy();
-            }, this);
-        }, this);
-
 
         // Start the game paused with the message READY!
         var readyText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'READY!', 5);
         this.game.input.keyboard.onDownCallback = function () {
-            that.game.paused = false;
-            if (readyText.img.visible) readyText.img.kill();
+            if (readyText.img.visible){
+                that.game.paused = false;
+                readyText.img.kill();
+                that.gameState = invadersApp.GameState.RUNNING;
+            }
         };
 
         this.updateCounter();
-
         this.game.paused = true;
-
-
     },
 
     update: function () {
@@ -115,22 +118,26 @@ invadersApp.Game.prototype = {
         var that = this;
 
         // If physics are paused, skip all
-        if (this.game.physics.arcade.isPaused) return;
+        if (this.game.physics.arcade.isPaused || this.gameState == invadersApp.GameState.PAUSED) return;
 
+        // Detect collisions with the wall and with the bullets
         this.game.physics.arcade.collide(this.wall, this.objects.invaders);
         this.game.physics.arcade.overlap(this.player.bullets, this.objects.invaders, function (bullet, invader) {
             bullet.kill();
             var living = that.objects.invaders.countLiving();
             if (living > MIN_INVADERS) {
-                invader.kill();
+                invader.destroy();
                 that.updateCounter();
             }
             if (living == MIN_INVADERS + 1) {
                 that.objects.invaders.forEachAlive(function (invader) {
-                    invader.showField();
+                    invader.drawShield(BLUE);
                 }, that);
             }
         }, null, this);
+
+        // Evolutionary cycle
+        this.updateEvolution();
     },
 
     quitGame: function (pointer) {
@@ -142,16 +149,25 @@ invadersApp.Game.prototype = {
 
     },
 
-    pausePhysics: function (pause) {
-        if (pause == undefined) pause = true;
-        this.game.physics.arcade.isPaused = pause;
+    pauseGame: function () {
+        this.game.physics.arcade.isPaused = true;
+        this.gameState = invadersApp.GameState.PAUSED;
     },
+
+    resumeGame: function () {
+        this.game.physics.arcade.isPaused = false;
+        this.gameState = invadersApp.GameState.RUNNING;
+    },
+
     
-    createGeneration: function () {
+    updateEvolution: function () {
         var that = this;
 
-        if (this.game.time.now > this.lastGenerationTime + this.currentGenerationTime) {
-            this.lastGenerationTime = this.game.time.now;
+        if (this.gameState == invadersApp.GameState.RUNNING &&
+            this.game.time.now > this.lastGenerationTime + this.currentGenerationTime) {
+
+            // Pause the game during the animation
+            this.pauseGame();
 
             // The number of invaders
             var alive = this.objects.invaders.countLiving();
@@ -165,32 +181,68 @@ invadersApp.Game.prototype = {
             // The number of new individuals is determined by a box-cox
             // transformation with lambda=0.6.
             var numPairs = Math.floor((Math.pow(alive, 0.6) - 1) / 0.6);
-            
             var pool = invadersApp.evolution.pool(aliveInvaders.list, numPairs);
             var offspring = invadersApp.evolution.evolve(pool, this.settings.genes);
 
-            // Start an animation
 
-            // Draw a line https://codepen.io/codevinsky/pen/dAjDp
-            offspring.forEach(function (p) {
+            // A timer for playing animations during the reproduction phase
+            this.animationTimer = this.game.time.create(true);
+            this.childIndex = 0;
+
+            this.animationTimer.repeat(this.animationDelay, offspring.length + 1, function () {
+                if (this.childIndex == offspring.length) return;
+
+                // Disable shields for all the invaders
+                aliveInvaders.callAll('hideShield');
+
+                var p = offspring[this.childIndex++];
                 var x = (p[0].x + p[1].x)/2;
                 var y = (p[0].y + p[1].y)/2;
                 that.objects.invaders.add(new invadersApp.Invader(that, p[2], x, y));
-            });
 
-            this.currentGeneration++;
+                // Draw lines
+                this.bgraphics.clear();
+                this.bgraphics.lineStyle(1, ORANGE);
+                this.bgraphics.moveTo(p[0].x, p[0].y);
+                this.bgraphics.lineTo(p[1].x, p[1].y);
 
-            // Disable shields
-            aliveInvaders.callAll('showField', false);
+                // Draw shields
+                p[0].drawShield(ORANGE);
+                p[1].drawShield(ORANGE);
 
-            // Decrease next generation time
-            if (this.currentGenerationTime > MIN_GENERATION_TIME) {
-                this.currentGenerationTime -= 150;
-                console.log(this.currentGenerationTime);
-            }
+                this.updateCounter();
+            }, this);
 
-            this.updateCounter();
-            this.updateScore();
+            this.animationTimer.onComplete.add(function () {
+                // Hide any visible shield
+                aliveInvaders.callAll('hideShield');
+
+                this.currentGeneration++;
+
+                // Decrease next generation time
+                if (this.currentGenerationTime > MIN_GENERATION_TIME) {
+                    this.currentGenerationTime -= 150;
+                }
+
+                // Decrease the animation  time
+                if (this.animationDelay > 50){
+                    this.animationDelay -= 150;
+                }
+
+                this.updateScore();
+
+                // Clear graphics
+                this.bgraphics.clear();
+
+                // Update the last generation time after completion
+                this.lastGenerationTime = this.game.time.now;
+                this.resumeGame();
+
+
+
+            }, this);
+
+            this.animationTimer.start();
         }
 
     },
