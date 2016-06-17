@@ -64,7 +64,7 @@ invadersApp.Player.prototype.update = function () {
             // Get the number of alive invaders
             var aliveInvaders = this.ctx.objects.invaders.countLiving();
 
-            if (aliveBullets <= aliveInvaders/10) {
+            if (aliveInvaders > MIN_INVADERS && aliveBullets <= aliveInvaders/10) {
                 this.lastShootAt = this.game.time.now;
                 var bullet = this.bullets.getFirstExists(false);
 
