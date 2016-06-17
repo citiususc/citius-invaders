@@ -121,16 +121,18 @@ invadersApp.Game.prototype = {
         // Detect collisions with the wall and with the bullets
         this.game.physics.arcade.collide(this.wall, this.objects.invaders);
         this.game.physics.arcade.overlap(this.player.bullets, this.objects.invaders, function (bullet, invader) {
-            bullet.kill();
-            var living = that.objects.invaders.countLiving();
-            if (living > MIN_INVADERS) {
-                invader.destroy();
-                that.updateCounter();
-            }
-            if (living == MIN_INVADERS + 1) {
-                that.objects.invaders.forEachAlive(function (invader) {
-                    invader.drawShield(BLUE);
-                }, that);
+            if (bullet.alive) {
+                bullet.kill();
+                var living = that.objects.invaders.countLiving();
+                if (living > MIN_INVADERS) {
+                    invader.destroy();
+                    that.updateCounter();
+                }
+                if (living == MIN_INVADERS + 1) {
+                    that.objects.invaders.forEachAlive(function (invader) {
+                        invader.drawShield(BLUE);
+                    }, that);
+                }
             }
         }, null, this);
 
