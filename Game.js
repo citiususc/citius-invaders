@@ -1,7 +1,7 @@
 // Game global config vars [MOVE TO SETTINGS]
 
 var WALL_MARGIN = 80;
-var DIR_CHANGE_MIN_TIME = 10;
+var DIR_CHANGE_MIN_TIME = 0;
 var SHOOT_DELAY = 100;
 var MIN_INVADERS = 4;
 var INITIAL_INVADERS = 6;

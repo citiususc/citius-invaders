@@ -1,5 +1,30 @@
 var invadersApp = invadersApp || {};
 
+
+// Port of python random.gammavariate
+function gammavariate(alpha, beta) {
+    SG_MAGICCONST = 1.0 + Math.log(4.5);
+    ainv = Math.sqrt(2.0 * alpha - 1.0);
+    bbb = alpha - 1.3862943611198906;
+    ccc = alpha + ainv;
+    while (1) {
+	u1 = Math.random();
+	if (u1 <= 1e-7 || u1 >= .9999999) {continue;}
+	u2 = 1.0 - Math.random();
+	v = Math.log(u1/(1.0-u1))/ainv;
+	x = alpha*Math.exp(v);
+	z = u1*u1*u2;
+	r = bbb+ccc*v-x;
+	if (r + SG_MAGICCONST - 4.5*z >= 0.0 || r >= Math.log(z)) {
+	    return x * beta;
+	}
+    }
+}
+
+function bound_value(v, min_v, max_v) {
+    return Math.min(Math.max(min_v, v), max_v)
+}
+
 // Extended sprite object for Invaders
 
 invadersApp.Invader = function (ctx, genes, x, y) {
@@ -22,6 +47,13 @@ invadersApp.Invader = function (ctx, genes, x, y) {
                 if (genes[gen] < min) genes[gen] = min;
                 if (genes[gen] > max) genes[gen] = max;
             }
+            //TODO guarrada para comprobar a influencia da primeira xeración
+            genes['scale'] = bound_value(gammavariate(4, 0.5)+1, 1, 7);
+	    genes['alpha'] = chance.integer({min: 20, max: 255});
+	    genes['xvelocity'] = 100*bound_value(gammavariate(2, 0.4), 0.01, 5);
+	    genes['yvelocity'] = 100*bound_value(gammavariate(2, 0.3), 0.01, 5);
+	    genes['x_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
+            genes['y_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
             return genes;
         }();
 

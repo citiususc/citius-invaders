@@ -12,24 +12,24 @@
       "mean": 200
     },
     "xvelocity": {
-      "min": 0,
-      "max": 300,
-      "mean": 30
+      "min": 1,
+      "max": 500,
+      "mean": 200
     },
     "yvelocity": {
-      "min": 0,
-      "max": 300,
-      "mean": 30
+      "min": 1,
+      "max": 500,
+      "mean": 200
     },
     "x_prob_change_dir": {
-      "min": 0.00,
-      "max": 0.10,
-      "mean": 0.01
+      "min": 0.01,
+      "max": 0.07,
+      "mean": 0.03
     },
     "y_prob_change_dir": {
-      "min": 0.00,
-      "max": 0.10,
-      "mean": 0.01
+      "min": 0.0,
+      "max": 0.07,
+      "mean": 0.03
     }
   },
   "mutation_probability": 0.1,
