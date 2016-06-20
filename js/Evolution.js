@@ -25,10 +25,10 @@ invadersApp.evolution = {
                     if (Math.random() < mutation) {
                         // Mutate this gene
                         var value = chance.pickone([-1.0, 1.0]) * Math.random() * (genes[gen].max - genes[gen].min) * effect;
-                        if (children[gen] + value < genes[gen].min || children[gen]+value > genes[gen].max) value = -value;
+                        if ((children[gen] == genes[gen].min && value < 0) || (children[gen] == genes[gen].max && value > 0)) value = -value;
                         children[gen] = children[gen] + value;
-                        //if (children[gen] < genes[gen].min) children[gen] = genes[gen].min;
-                        //if (children[gen] > genes[gen].max) children[gen] = genes[gen].max;
+                        if (children[gen] < genes[gen].min) children[gen] = genes[gen].min;
+                        if (children[gen] > genes[gen].max) children[gen] = genes[gen].max;
                     }
                 }
             }
