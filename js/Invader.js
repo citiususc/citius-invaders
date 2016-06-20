@@ -3,21 +3,23 @@ var invadersApp = invadersApp || {};
 
 // Port of python random.gammavariate
 function gammavariate(alpha, beta) {
-    SG_MAGICCONST = 1.0 + Math.log(4.5);
+    SG_MAGICCONST = 2.504077396776274;
     ainv = Math.sqrt(2.0 * alpha - 1.0);
     bbb = alpha - 1.3862943611198906;
     ccc = alpha + ainv;
     while (1) {
-	u1 = Math.random();
-	if (u1 <= 1e-7 || u1 >= .9999999) {continue;}
-	u2 = 1.0 - Math.random();
-	v = Math.log(u1/(1.0-u1))/ainv;
-	x = alpha*Math.exp(v);
-	z = u1*u1*u2;
-	r = bbb+ccc*v-x;
-	if (r + SG_MAGICCONST - 4.5*z >= 0.0 || r >= Math.log(z)) {
-	    return x * beta;
-	}
+        u1 = Math.random();
+        if (u1 <= 1e-7 || u1 >= .9999999) {
+            continue;
+        }
+        u2 = 1.0 - Math.random();
+        v = Math.log(u1 / (1.0 - u1)) / ainv;
+        x = alpha * Math.exp(v);
+        z = u1 * u1 * u2;
+        r = bbb + ccc * v - x;
+        if (r + SG_MAGICCONST - 4.5 * z >= 0.0 || r >= Math.log(z)) {
+            return x * beta;
+        }
     }
 }
 
@@ -31,7 +33,7 @@ invadersApp.Invader = function (ctx, genes, x, y) {
 
     var game = ctx.game;
     x = x || game.world.randomX;
-    y = y || game.world.randomY % (game.world.height - WALL_MARGIN * 1.5) ;
+    y = y || game.world.randomY % (game.world.height - WALL_MARGIN * 1.5);
     Phaser.Sprite.call(this, game, x, y, 'invader');
     game.physics.enable(this, Phaser.Physics.ARCADE);
 
@@ -39,20 +41,20 @@ invadersApp.Invader = function (ctx, genes, x, y) {
     this.genes = genes || function () {
             var settings = ctx.settings;
             var genes = {};
-            for(var gen in settings.genes){
+            for (var gen in settings.genes) {
                 var min = settings.genes[gen].min;
                 var max = settings.genes[gen].max;
                 //genes[gen] = chance.normal({mean: ((max-min)/2)+min, dev: (max-min)/6});
-                genes[gen] = chance.normal({mean: settings.genes[gen].mean, dev: (max-min)/6});
+                genes[gen] = chance.normal({mean: settings.genes[gen].mean, dev: (max - min) / 6});
                 if (genes[gen] < min) genes[gen] = min;
                 if (genes[gen] > max) genes[gen] = max;
             }
             //TODO guarrada para comprobar a influencia da primeira xeración
-            genes['scale'] = bound_value(gammavariate(4, 0.5)+1, 1, 7);
-	    genes['alpha'] = chance.integer({min: 20, max: 255});
-	    genes['xvelocity'] = 120*bound_value(gammavariate(2, 0.4), 0.01, 5);
-	    genes['yvelocity'] = 120*bound_value(gammavariate(2, 0.3), 0.01, 5);
-	    genes['x_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
+            genes['scale'] = bound_value(gammavariate(4, 0.5) + 1, 1, 7);
+            genes['alpha'] = chance.integer({min: 20, max: 255});
+            genes['xvelocity'] = 120 * bound_value(gammavariate(2, 0.4), 0.01, 5);
+            genes['yvelocity'] = 120 * bound_value(gammavariate(2, 0.3), 0.01, 5);
+            genes['x_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
             genes['y_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
             return genes;
         }();
@@ -74,7 +76,7 @@ invadersApp.Invader = function (ctx, genes, x, y) {
     this.fitness = 0;
 
     // Create a shield
-    this.shieldGraphics = this.game.make.graphics(0,0);
+    this.shieldGraphics = this.game.make.graphics(0, 0);
 
     // Add the invader to the game (move this outside this class?)
     game.add.existing(this);
@@ -82,7 +84,7 @@ invadersApp.Invader = function (ctx, genes, x, y) {
 
 invadersApp.Invader.prototype = Object.create(Phaser.Sprite.prototype);
 invadersApp.Invader.prototype.constructor = invadersApp.Invader;
-invadersApp.Invader.prototype.update = function() {
+invadersApp.Invader.prototype.update = function () {
     // Decide if it is time to change direction.
     if (this.game.time.now > this.lastTimeChanged + DIR_CHANGE_MIN_TIME) {
         this.lastTimeChanged = this.game.time.now;
@@ -100,13 +102,12 @@ invadersApp.Invader.prototype.drawShield = function (color) {
     this.shieldGraphics.drawCircle(-0.5, -0.5, 15 * this.scaleValue);
     this.addChildAt(this.shieldGraphics, 0);
     this.shieldGraphics.visible = true;
-    this.shieldGraphics.scale.setTo(1.5/this.scaleValue, 1.5/this.scaleValue);
+    this.shieldGraphics.scale.setTo(1.5 / this.scaleValue, 1.5 / this.scaleValue);
 };
-invadersApp.Invader.prototype.hideShield = function (color) {
+invadersApp.Invader.prototype.hideShield = function () {
     this.shieldGraphics.clear();
     this.shieldGraphics.visible = false;
-    //this.removeChildAt(0);
 };
 invadersApp.Invader.prototype.increaseFitness = function () {
-  this.fitness++;
+    this.fitness++;
 };
