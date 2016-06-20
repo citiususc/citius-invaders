@@ -60,7 +60,6 @@ invadersApp.Game.prototype = {
 
         this.currentGenerationTime = Phaser.Timer.SECOND * 5;
         this.currentGeneration = 0;
-        this.lastGenerationTime = this.game.time.now;
 
         // Load game config
         this.settings = this.game.cache.getJSON('settings');
@@ -103,6 +102,7 @@ invadersApp.Game.prototype = {
             if (readyText.img.visible){
                 that.game.paused = false;
                 readyText.img.kill();
+                that.lastGenerationTime = that.game.time.now;
                 that.gameState = invadersApp.GameState.RUNNING;
             }
         };
