@@ -27,7 +27,7 @@
       "mean": 0.03
     },
     "y_prob_change_dir": {
-      "min": 0.0,
+      "min": 0.01,
       "max": 0.07,
       "mean": 0.03
     }

@@ -45,17 +45,18 @@ invadersApp.Invader = function (ctx, genes, x, y) {
                 var min = settings.genes[gen].min;
                 var max = settings.genes[gen].max;
                 //genes[gen] = chance.normal({mean: ((max-min)/2)+min, dev: (max-min)/6});
-                genes[gen] = chance.normal({mean: settings.genes[gen].mean, dev: (max - min) / 6});
-                if (genes[gen] < min) genes[gen] = min;
-                if (genes[gen] > max) genes[gen] = max;
+                genes[gen] = chance.floating({min: settings.genes[gen].min, max: settings.genes[gen].max});
+                //genes[gen] = chance.normal({mean: settings.genes[gen].mean, dev: (max - min) / 6});
+                //if (genes[gen] < min) genes[gen] = min;
+                //if (genes[gen] > max) genes[gen] = max;
             }
             //TODO guarrada para comprobar a influencia da primeira xeración
-            genes['scale'] = bound_value(gammavariate(4, 0.5) + 1, 1, 7);
-            genes['alpha'] = chance.integer({min: 20, max: 255});
-            genes['xvelocity'] = 120 * bound_value(gammavariate(2, 0.4), 0.01, 5);
-            genes['yvelocity'] = 120 * bound_value(gammavariate(2, 0.3), 0.01, 5);
-            genes['x_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
-            genes['y_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
+//             genes['scale'] = bound_value(gammavariate(4, 0.5) + 1, 1, 7);
+//             genes['alpha'] = chance.integer({min: 20, max: 255});
+//             genes['xvelocity'] = 120 * bound_value(gammavariate(2, 0.4), 0.01, 5);
+//             genes['yvelocity'] = 120 * bound_value(gammavariate(2, 0.3), 0.01, 5);
+//             genes['x_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
+//             genes['y_prob_change_dir'] = chance.floating({min: 0.01, max: 0.05});
             return genes;
         }();
 
