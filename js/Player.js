@@ -62,7 +62,7 @@ invadersApp.Player.prototype.update = function () {
             var aliveBullets = this.bullets.countLiving();
 
             // Get the number of alive invaders
-            var aliveInvaders = this.ctx.objects.invaders.countLiving();
+            var aliveInvaders = this.ctx.living;
 
             if (aliveInvaders > MIN_INVADERS && aliveBullets <= aliveInvaders/10) {
                 this.lastShootAt = this.game.time.now;
@@ -77,7 +77,7 @@ invadersApp.Player.prototype.update = function () {
                         xpos = this.x + 21;
                     }
                     bullet.reset(xpos, this.y - 20);
-                    bullet.body.velocity.y = -2000;
+                    bullet.body.velocity.y = -(1000 + aliveInvaders * 15);
                 }
             }
         }

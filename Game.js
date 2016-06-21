@@ -47,8 +47,6 @@ invadersApp.Game = function (game) {
 
 
     this.gameState = invadersApp.GameState.PAUSED;
-    this.lastShootAt = 0;
-    this.readyToFire = true;
     this.animationDelay = Phaser.Timer.SECOND;
 };
 
@@ -287,8 +285,8 @@ invadersApp.Game.prototype = {
     },
 
     updateCounter: function () {
-        var living = this.objects.invaders.countLiving();
-        this.invadersHud.font.text = invadersApp.utils.pad(living, 3);
+        this.living = this.objects.invaders.countLiving();
+        this.invadersHud.font.text = invadersApp.utils.pad(this.living, 3);
     }
 
 };
