@@ -192,7 +192,7 @@ invadersApp.Game.prototype = {
 
             var evolutionText;
 
-            if (this.animationDelay > 500) {
+            if (this.animationDelay > 800) {
                 evolutionText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'EVOLUTION TIME', 5);
             }
 
