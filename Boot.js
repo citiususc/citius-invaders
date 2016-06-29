@@ -18,6 +18,11 @@ invadersApp.Boot.prototype = {
         {
             //  If you have any desktop specific settings, they can go in here
             this.scale.pageAlignHorizontally = true;
+            //this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+            var scale = (window.innerWidth/960) * 0.8;
+            this.scale.setUserScale(scale, scale);
+            this.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
+
         }
         else
         {
@@ -40,7 +45,6 @@ invadersApp.Boot.prototype = {
         this.load.image('preloaderBackground', 'assets/background.png');
         this.load.image('retroFont', 'assets/fonts/font3.png');
         this.load.image('preloaderBar', 'assets/preload.png');
-        this.load.bitmapFont('minecraftia', 'assets/fonts/minecraftia.png', 'assets/fonts/minecraftia.xml');
         
     },
 

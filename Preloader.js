@@ -12,18 +12,13 @@ invadersApp.Preloader.prototype = {
 	preload: function () {
 
 		
-		//	These are the assets we loaded in Boot.js
-		//  this.background = this.game.add.tileSprite(0, 0, this.game.width, this.game.height, 'preloaderBackground');
-		//var loadingText = this.add.bitmapText(this.game.width / 2, this.game.height / 2 - 60, 'minecraftia', 'Loading...');
+
 		var loadingText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2 - 60, 'Loading...', 3);
 
-		//loadingText.anchor.x = 0.5;
-		//loadingText.anchor.setTo(0.5, 0.5);
 
 		this.preloadBar = this.add.sprite(this.game.width / 2, loadingText.img.y + 40, 'preloaderBar');
 		this.preloadBar.anchor.setTo(0.5, 0.5);
-        //this.preloadBar.tint =
-
+       
 		//	This sets the preloadBar sprite as a loader sprite.
 		//	What that does is automatically crop the sprite from 0 to full-width
 		//	as the files below are loaded in.
@@ -32,7 +27,7 @@ invadersApp.Preloader.prototype = {
 		//	Here we load the rest of the assets our game needs.
 		//	As this is just a Project Template I've not provided these assets, swap them for your own.
 		this.load.image('titlepage', 'assets/title.png');
-		//this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
+
 		this.load.audio('titleMusic', ['assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
 		this.load.audio('gameOverMusic', ['assets/audio/invaders_gameover.ogg']);
 		this.load.audio('mainMusic', ['assets/audio/invaders_mainloop.ogg']);
