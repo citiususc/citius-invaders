@@ -34,7 +34,9 @@ invadersApp.Preloader.prototype = {
 		this.load.image('titlepage', 'assets/title.png');
 		//this.load.atlas('playButton', 'images/play_button.png', 'images/play_button.json');
 		this.load.audio('titleMusic', ['assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
-		
+		this.load.audio('gameOverMusic', ['assets/audio/invaders_gameover.ogg']);
+		this.load.audio('mainMusic', ['assets/audio/invaders_mainloop.ogg']);
+		this.load.audio('sfx', 'assets/audio/fx_mixdown.ogg');
 
 		//	+ lots of other required assets here
 		this.load.image('nao', 'assets/nao.png');
@@ -50,7 +52,7 @@ invadersApp.Preloader.prototype = {
 
 	create: function () {
 
-		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
+		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the mainMusic decodes
 		this.preloadBar.cropEnabled = false;
 
 	},

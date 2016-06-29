@@ -64,7 +64,23 @@ invadersApp.Game.prototype = {
 
         // Initialize basic physics
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        
+        // Load mainMusic assets
+        this.gameOverMusic = this.add.audio('gameOverMusic');
 
+        // FX sounds (from ...)
+        this.fx = this.game.add.audio('sfx');
+        this.fx.allowMultiple = true;
+
+        this.fx.addMarker('alien_death', 1, 1.0);
+        this.fx.addMarker('hit', 3, 0.5);
+        this.fx.addMarker('escape', 4, 3.2);
+        this.fx.addMarker('meow', 8, 0.5);
+        this.fx.addMarker('numkey', 9, 0.1);
+        this.fx.addMarker('ping', 10, 1.0);
+        this.fx.addMarker('death', 12, 4.2);
+        this.fx.addMarker('shot', 17, 1.0);
+        this.fx.addMarker('squit', 19, 0.3);
 
         // Group of invaders
         this.objects.invaders = this.add.group();
@@ -124,6 +140,7 @@ invadersApp.Game.prototype = {
                 var living = that.objects.invaders.countLiving();
                 if (living > MIN_INVADERS) {
                     invader.destroy();
+                    that.fx.play('alien_death');
                     that.updateCounter();
                 }
                 if (living == MIN_INVADERS + 1) {
@@ -140,7 +157,7 @@ invadersApp.Game.prototype = {
 
     quitGame: function (pointer) {
 
-        //  TODO: Stop music, delete sprites, purge caches, free resources...
+        //  TODO: Stop mainMusic, delete sprites, purge caches, free resources...
 
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
@@ -160,6 +177,8 @@ invadersApp.Game.prototype = {
     gameOver: function () {
         invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'GAME OVER!', 5);
         this.gameState = invadersApp.GameState.GAME_OVER;
+        //invadersApp.MainMenu.mainMusic.stop();
+        this.gameOverMusic.play('', 0, 1, true, true);
     },
     
     updateEvolution: function () {

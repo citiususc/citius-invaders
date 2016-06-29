@@ -1,7 +1,7 @@
 
 invadersApp.MainMenu = function (game) {
 
-	this.music = null;
+	this.mainMusic = null;
 	this.playButton = null;
 };
 
@@ -9,8 +9,8 @@ invadersApp.MainMenu.prototype = {
 
 	create: function () {
 
-		this.music = this.add.audio('titleMusic');
-		//this.music.play('', 0, 1, true, true);
+		this.mainMusic = this.add.audio('mainMusic');
+		//this.mainMusic.play('', 0, 1, true, true);
 
 
         var textTop = invadersApp.utils.addText(this, this.game.width / 2, 50, 'CITIUS PROUDLY PRESENTS:' , 2);
@@ -39,7 +39,11 @@ invadersApp.MainMenu.prototype = {
 
 		//var titleText = this.add.bitmapText(this.game.width / 2, 50, 'minecraftia', 'CiTIUS INVADERS', 50);
 		//titleText.anchor.x = 0.5;
-        var textPressStart = invadersApp.utils.addText(this, this.game.width / 2, titleYPos + 200, 'PRESS START', 2);
+
+        var textIES = invadersApp.utils.addText(this, this.game.width / 2, titleYPos + 50, 'A GAME FOR IES ROSALIA DE CASTRO', 1);
+        textIES.img.visible = false;
+
+        var textPressStart = invadersApp.utils.addText(this, this.game.width / 2, titleYPos + 200, 'PRESS ENTER', 2);
         textPressStart.img.visible = false;
 
 		//var startEntry = this.addMenuEntry('START GAME', titleYPos + 160, this.startGame);
@@ -55,8 +59,8 @@ invadersApp.MainMenu.prototype = {
         tweenPresents.chain(tweenTitle);
 
         tweenPresents.onComplete.add(function () {
-            // Play music
-            this.music.play('', 0, 1, true, true);
+            // Play mainMusic
+            this.mainMusic.play('', 0, 1, true, true);
         }, this);
 
         tweenTitle.onComplete.add(function () {
@@ -64,13 +68,14 @@ invadersApp.MainMenu.prototype = {
             logo.visible = true;
             textCopyright.img.visible = true;
             textPressStart.img.visible = true;
+            textIES.img.visible = true;
 
             // Start blinking event for 'PRESS START'
             this.game.time.events.loop(Phaser.Timer.HALF, function () {
                 textPressStart.img.visible = !textPressStart.img.visible;
             }, this);
 
-            //this.music.play('', 0, 1, true, true);
+            //this.mainMusic.play('', 0, 1, true, true);
 
         }, this);
 
@@ -87,7 +92,7 @@ invadersApp.MainMenu.prototype = {
 	},
 
 	startGame: function (pointer) {
-		this.music.stop();
+		this.mainMusic.stop();
 		this.state.start('Game');
 	}
 

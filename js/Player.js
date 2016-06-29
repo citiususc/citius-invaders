@@ -79,6 +79,7 @@ invadersApp.Player.prototype.update = function () {
                     bullet.reset(xpos, this.y - 20);
                     //bullet.body.velocity.y = -(1000 + aliveInvaders * 15);
                     bullet.body.velocity.y = -2000;
+                    this.ctx.fx.play('shot');
                 }
             }
         }
