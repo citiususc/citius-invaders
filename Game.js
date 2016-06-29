@@ -192,7 +192,7 @@ invadersApp.Game.prototype = {
 
             var evolutionText;
 
-            if (this.animationDelay > 800) {
+            if (this.animationDelay > 500) {
                 evolutionText = invadersApp.utils.addText(this, this.game.width / 2, this.game.height / 2, 'EVOLUTION TIME', 5);
             }
 
@@ -218,6 +218,11 @@ invadersApp.Game.prototype = {
 
             this.animationTimer.repeat(this.animationDelay, offspring.length + 1, function () {
                 if (childIndex == offspring.length) return;
+
+                if (evolutionText != undefined){
+                    evolutionText.img.destroy();
+                    evolutionText = null;
+                }
 
                 // Disable shields for all the invaders
                 aliveInvaders.callAll('hideShield');
