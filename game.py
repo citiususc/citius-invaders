@@ -58,12 +58,11 @@ class InvadersGame(sge.dsp.Game):
 
     def show_hud(self):
         self.clock.tick()
-        fps = int(self.clock.get_fps())
-        hud_string = 'SCORE: {0:03d}  INVADERS: {1:03d}  FPS: {2:03d}'
+        hud_string = 'SCORE: {0:03d}  INVADERS: {1:03d}'
         num_invaders = sum(1 for o in
                    self.current_room.objects if isinstance(o, objects.Invader))
         self.project_text(self.hud_font, hud_string.format(self.score,
-                                    num_invaders, fps), 5, 5, anti_alias=False)
+                                          num_invaders), 5, 5, anti_alias=False)
         if self.game_over:
             self.project_text(sge.gfx.Font('minecraftia.ttf', size=70),
                               'Game\nOver', RESX/2, RESY/2 - 140, halign='center',

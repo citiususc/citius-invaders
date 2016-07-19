@@ -9,8 +9,10 @@ Created on Tue May  3 18:34:45 2016
 import sge
 import game
 import objects
+import os
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(os.path.realpath("__file__")))
     # Create Game object
     game.InvadersGame()
 
