@@ -20,7 +20,7 @@ There are two versions of the game, a [python version](https://github.com/citius
 
 This game was made by [Tomás Teijeiro](https://github.com/tomas-teijeiro) and [Pablo Rodríguez Mier](https://github.com/pablormier) because why not?
 
-The music was composed by the amazing Constantino Antonio García Fernández, who, despite being involved in thousands of projects and activities, still find time to help his friends with this stupid things.
+The music was composed by the amazing Constantino Antonio García Fernández, who, despite being involved in thousands of projects and activities, still find time to help his friends with these stupid things.
 
 ## Screenshots
 
