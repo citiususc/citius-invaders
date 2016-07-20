@@ -2,11 +2,13 @@
 
 An old-style arcade game to learn evolutionary algorithms and genetic programming. [Play here!](https://citiususc.github.io/citius-invaders/)
 
+## About
+
+This game was created to explain the basic concepts of evolution and genetic programming to college students. The game starts with 4 invaders that mate themselves. Each invader has different genes that codify their behavior, such as speed, probability of changing direction, size, color... During evolution time, the invaders start mating in order to create new invaders that inherit the attributes of their parents. Best invaders (invaders with higher fitness) have more probability to be selected for mating. The fitness of an invader corresponds with the number of evolutions that it has survived. This mechanism allows the invaders to improve their behavior against the player over time by learning the best set of features that allows them to survive.
+
 ## How to play
 
-Controls are very easy. Just use left/right arrow to move your robot and space to shot. The goal is to keep the number of invaders below 100, otherwise the game is over. There are always at least 4 invaders, which are protected with blue shields.
-
-
+Controls are very easy. Just use left/right arrow to move your robot and space to shot. The goal is to keep the number of invaders below 100, otherwise the game is over. There are always at least 4 invaders (elitism), which are protected with blue shields. The player earns 1 point for each evolution time.
 
 ## Screenshots
 
