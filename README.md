@@ -1,6 +1,8 @@
 # CiTIUS Invaders
 
-An old-style arcade game to learn evolutionary algorithms and genetic programming. [Play here!](https://citiususc.github.io/citius-invaders/)
+An old-style arcade game to learn evolutionary algorithms and genetic programming. 
+
+__[Play the web version!](https://citiususc.github.io/citius-invaders/)__
 
 ## About
 
