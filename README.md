@@ -10,6 +10,10 @@ This game was created to explain the basic concepts of evolution and genetic pro
 
 Controls are very easy. Just use left/right arrow to move your robot and space to shot. The goal is to keep the number of invaders below 100, otherwise the game is over. There are always at least 4 invaders (elitism), which are protected with blue shields. The player earns 1 point for each evolution time.
 
+## Code
+
+There are two versions of the game, a [python version](https://github.com/citiususc/citius-invaders/tree/master/python) and a [HTML5 version](https://github.com/citiususc/citius-invaders/tree/master/js) made with [Phaser](http://phaser.io/). You can play the HTML5 version here: https://citiususc.github.io/citius-invaders
+
 ## Screenshots
 
 ### Main menu
@@ -17,3 +21,5 @@ Controls are very easy. Just use left/right arrow to move your robot and space t
 
 ### Game screen
 ![Game screen](https://github.com/citiususc/citius-invaders/blob/2481bac3c424a95fbb782de329dceb0f059e9a09/screenshots/game.png?raw=true)
+
+## License 
