@@ -29,3 +29,7 @@ The music was composed by the amazing Constantino Antonio García Fernández, wh
 
 ### Game screen
 ![Game screen](https://github.com/citiususc/citius-invaders/blob/2481bac3c424a95fbb782de329dceb0f059e9a09/screenshots/game.png?raw=true)
+
+### License
+
+This project is licensed under the terms of the [MIT license](LICENSE).
