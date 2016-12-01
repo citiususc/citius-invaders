@@ -28,7 +28,7 @@ invadersApp.Preloader.prototype = {
 		//	As this is just a Project Template I've not provided these assets, swap them for your own.
 		this.load.image('titlepage', 'assets/title.png');
 
-		this.load.audio('titleMusic', ['assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
+		// this.load.audio('titleMusic', ['assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
 		this.load.audio('gameOverMusic', ['assets/audio/invaders_gameover.ogg']);
 		this.load.audio('mainMusic', ['assets/audio/invaders_mainloop.ogg']);
 		this.load.audio('sfx', 'assets/audio/fx_mixdown.ogg');
