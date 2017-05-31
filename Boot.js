@@ -27,13 +27,13 @@ invadersApp.Boot.prototype = {
         else
         {
             //  Same goes for mobile settings.
-            this.scale.startFullScreen(false);
             this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT
-            this.scale.forceOrientation(true, false);
+            //this.scale.forceOrientation(true, false);
             //this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
             //this.scale.setMinMax(480, 260, 1024, 768);
-            this.scale.forceLandscape = true;
-            this.scale.pageAlignHorizontally = true;
+            //this.scale.forceLandscape = true;
+            //this.scale.pageAlignHorizontally = true;
+            this.scale.startFullScreen(false, false);
             //this.scale.setShowAll();
             //this.scale.refresh();
         }
